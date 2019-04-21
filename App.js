@@ -1,0 +1,43 @@
+import React from 'react'
+import Guest from './Applications/Navigation/Guest'
+import Preloader from './Applications/Components/PreLoader'
+import Logged from './Applications/Navigation/Logged'
+import { connect } from 'react-redux';
+
+
+
+
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      loaded: true,
+    }
+  }
+
+
+  render() {
+    const { loaded } = this.state
+
+    if (!loaded) {
+      return (<Preloader />)
+    }
+    if (this.props.isAuthenticated) {
+      return <Logged />
+    } else {
+      return (
+        <Guest />
+      )
+    }
+  }
+}
+
+const mapStateToProps = state => {
+
+  return {
+    isAuthenticated: state.token !== null,
+  }
+}
+
+export default connect(mapStateToProps)(App)
