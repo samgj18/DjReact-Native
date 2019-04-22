@@ -77,7 +77,7 @@ class Ble extends Component {
         if (result) {
           console.log("All permissions given");
         } else {
-          PermissionsAndroid.requestPermission(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION).then((result) => {
+          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION).then((result) => {
             if (result) {
               console.log("User accept");
             } else {
@@ -175,7 +175,6 @@ class Ble extends Component {
           voltage_coil_1: coilOne,
           voltage_coil_2: coilTwo,
           voltage_generated_by_user: value,
-          datetime: ''
 
         })
       }
@@ -236,12 +235,13 @@ class Ble extends Component {
                     arrayDataChar = data.value.map(value => {
                       return String.fromCharCode(value)
                     })
-                    var res = arrayDataChar.split("#")
+                    arrayDataChar = arrayDataChar.join('')
+                    let res = arrayDataChar.split("#")
 
                     coilOneData = res[0]
                     coilTwoData = res[1]
                     userVoltageData = res[2]
-
+                    console.log( this.props.token)
                     this.setState({
                       dataDoubleVoltage: userVoltageData,
                       dataDoubleVoltageCoilOne: coilOneData,
@@ -250,7 +250,7 @@ class Ble extends Component {
 
                     /* We are getting the data that the Microcontroller is sending and converting to a string chain from the
                     Unicode numbers then by means of .join ('') we are deleting the commas and turning the list into one single
-                    element and sending that data to the state as a single value  */
+                    element and sending that data to the state as a single value */
                     try {
                       let userData = this.state.userData
                       userData[0].voltage = this.state.dataDoubleVoltage
@@ -318,7 +318,7 @@ class Ble extends Component {
                     } catch (error) {
                       this.refs.toast.show(error, DURATION.LENGTH_LONG);
                     }
-                  })
+                  }) 
                 })
                 .catch((error) => {
                   console.log('Connection error', error);
@@ -360,7 +360,6 @@ class Ble extends Component {
   render() {
     const list = Array.from(this.state.peripherals.values());
     const dataSource = ds.cloneWithRows(list);
-    let { dataFlag } = this.dataFlag
     return (
       <View style={styles.MainContainer}>
         <View style={styles.boxOne}>
