@@ -177,15 +177,15 @@ class Ble extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user: id,
+          //user: id,
           voltage_coil_1: coilOne,
           voltage_coil_2: coilTwo,
           voltage_generated_by_user: value,
           activity,
-          datetime
+          //datetime
         })
       }
-      const URL = 'http://72.14.177.247/api/data/'
+      const URL = 'http://72.14.177.247/voltages/test-data/'
       const response = await fetch(URL, config)
       const serverResponse = await response.json()
       console.log(serverResponse)
@@ -301,7 +301,7 @@ class Ble extends Component {
                               (isConnected) => { this.setState({ status: isConnected }) }
                             )
                           }
-                        } else {
+                        } else if (!this.state.status && this.dataFlag) {
                           if (value !== null) {
                             const existingData = JSON.parse(value)
                             existingData.push(this.state.userData[0])
@@ -323,6 +323,8 @@ class Ble extends Component {
                               }
                             );
                           }
+                        }else{
+                          console.log('Error, no se pudieron tomar los datos')
                         }
                       })
                     } catch (error) {
