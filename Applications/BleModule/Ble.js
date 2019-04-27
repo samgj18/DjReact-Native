@@ -22,8 +22,8 @@ import BleManager from 'react-native-ble-manager'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 const BleManagerModule = NativeModules.BleManager
-
-
+const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+const counter = 0
 
 /*
 Sometimes an app needs to access a platform API and React Native doesn't have a corresponding module yet. 
@@ -168,7 +168,7 @@ class Ble extends Component {
   to false managing to disconnect the device
   */
 
-  sendDataToServer = async (value, coilOne, coilTwo, id,datetime,activity) => {
+  sendDataToServer = async (value, coilOne, coilTwo, id, datetime, activity) => {
     try {
       let config = {
         method: 'POST',
@@ -195,9 +195,10 @@ class Ble extends Component {
   }
 
   /*
+
     Sending data to the server
   */
- 
+
   //alert('A list was submitted: ' + this.state.formvalue);
 
 
@@ -252,6 +253,7 @@ class Ble extends Component {
                     coilTwoData = res[1]
                     userVoltageData = res[2]
                     console.log(this.props.token)
+                    console.log(this.state.pickerValue)
                     this.setState({
                       dataDoubleVoltage: userVoltageData,
                       dataDoubleVoltageCoilOne: coilOneData,
@@ -284,7 +286,8 @@ class Ble extends Component {
                                 return row[header]
                               })
                               this.datRows.push(values)
-                              this.sendDataToServer(row.voltage, row.coilOneData, row.coilTwoData, row.id,null,this.state.pickerValue)
+                              this.sendDataToServer(row.voltage, row.coilOneData, row.coilTwoData, row.id, null, this.state.pickerValue)
+                              this.refs.toast.show('Dato enviado 1', DURATION.LENGTH_LONG);
                             }
                             this.removeItemValue()
                             NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
@@ -292,10 +295,12 @@ class Ble extends Component {
                               (isConnected) => { this.setState({ status: isConnected }); }
                             )
                             console.log('Base de datos local no vacía enviando todos los datos')
+                            this.refs.toast.show('Dato enviado 2', DURATION.LENGTH_LONG);
                           } else {
-                            this.sendDataToServer(this.state.dataDoubleVoltage, this.state.dataDoubleVoltageCoilOne, this.state.dataDoubleVoltageCoilTwo, this.state.userID,null,this.state.pickerValue)
-                            this.removeItemValue()
-                            console.log('Base de datos local vacía enviando dato')
+                              this.sendDataToServer(this.state.dataDoubleVoltage, this.state.dataDoubleVoltageCoilOne, this.state.dataDoubleVoltageCoilTwo, this.state.userID, date, this.state.pickerValue)
+                              this.removeItemValue()
+                              console.log('Base de datos local vacía enviando dato')
+                              counter = counter -1
                             NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange)
                             NetInfo.isConnected.fetch().done(
                               (isConnected) => { this.setState({ status: isConnected }) }
@@ -303,10 +308,16 @@ class Ble extends Component {
                           }
                         } else if (!this.state.status && this.dataFlag) {
                           if (value !== null) {
-                            const existingData = JSON.parse(value)
+                            const existingData = JSON.parse(`{
+                              "voltage_coil_1": ${this.state.dataDoubleVoltageCoilOne},
+                              "voltage_coil_2": ${this.state.dataDoubleVoltageCoilTwo},
+                              "voltage_generated_by_user": ${this.state.dataDoubleVoltage},
+                              "activity": ${this.state.pickerValue},
+                            }`)
                             existingData.push(this.state.userData[0])
                             AsyncStorage.setItem('databaseTest', JSON.stringify(existingData)).then(() => {
                               console.log('No hay conexión base de datos local no vacía ' + this.state.status)
+                              this.refs.toast.show('Dato NO enviado 1', DURATION.LENGTH_LONG);
                             })
                             NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
                             NetInfo.isConnected.fetch().done(
@@ -315,6 +326,7 @@ class Ble extends Component {
                           } else {
                             AsyncStorage.setItem('databaseTest', JSON.stringify(this.state.userData)).then(() => {
                               console.log('No hay conexión base de datos local vacía ' + this.state.status)
+                              this.refs.toast.show('Dato NO enviado 2', DURATION.LENGTH_LONG);
                             })
                             NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
                             NetInfo.isConnected.fetch().done(
@@ -323,8 +335,8 @@ class Ble extends Component {
                               }
                             );
                           }
-                        }else{
-                          console.log('Error, no se pudieron tomar los datos')
+                        } else {
+                          console.log('Por favor presiona el check para empezar el envío de datos')
                         }
                       })
                     } catch (error) {

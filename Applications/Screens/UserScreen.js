@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    token: state.token,
-    id: state.id,
-    loading: state.loading
+    token: state.auth.token,
+    id: state.auth.id,
+    loading: state.auth.loading
   }
 }
 

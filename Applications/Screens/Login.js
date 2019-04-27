@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import t from 'tcomb-form-native'
 import BackgroundImage from '../Utils/BackgroundImage';
 import LoginImage from '../Assets/Images/Register.png'
-import * as actions from '../Stores/Actions/auth'
+import * as  actions from '../Stores/Actions/auth'
 
 const Form = t.form.Form;
 
@@ -129,8 +129,8 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        loading: state.loading,
-        error: state.error
+        loading: state.auth.loading,
+        error: state.auth.error
     }
 }
 
