@@ -17,13 +17,13 @@ import { connect } from 'react-redux';
 import { Icon } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import BleManager from 'react-native-ble-manager'
-
+import * as actions from '../Stores/Actions/ble'
 
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 const BleManagerModule = NativeModules.BleManager
 const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-const counter = 0
+
 
 /*
 Sometimes an app needs to access a platform API and React Native doesn't have a corresponding module yet. 
@@ -36,6 +36,19 @@ const BleManagerEmitter = new NativeEventEmitter(BleManagerModule)
 /* Subscribing events from BleManagerModule by creating a new NativeEventEmitter instance around this module, this
 will be helpful later the in code */
 
+const INITIAL_STATE = {
+  dataDoubleVoltage: '',
+  dataDoubleVoltageCoilOne: '',
+  dataDoubleVoltageCoilTwo: '',
+  iconColor: 'red',
+  pickerValue: '',
+  scanning: false,
+  peripherals: new Map(),
+  status: '',
+
+}
+
+
 class Ble extends Component {
   constructor(props) {
     super(props)
@@ -43,21 +56,14 @@ class Ble extends Component {
     const { navigation } = this.props;
     const userID = navigation.getParam('userID')
     this.state = {
-      scanning: false,
-      peripherals: new Map(),
+      ...INITIAL_STATE,
       userData: [{
         id: userID,
         voltage: '',
         coilOneData: '',
         coilTwoData: '',
       }],
-      pickerValue: '',
-      status: '',
-      dataDoubleVoltage: '',
-      dataDoubleVoltageCoilOne: '',
-      dataDoubleVoltageCoilTwo: '',
-      userID: userID,
-      iconColor: 'red'
+      userID: userID
     }
     this.dataFlag = false
     this.datRows = []
@@ -123,17 +129,9 @@ class Ble extends Component {
   }
 
   handleDiscoverPeripheral(peripheral) {
-    var peripherals = this.state.peripherals
-    if (!peripherals.has(peripheral.id)) {
-      peripherals.set(peripheral.id, peripheral)
-      this.setState({ peripherals })
-    }
+    this.props.discoveredPeripheral(peripheral, this.state.peripherals)
   }
-  /*
-  This portion of code, as its name indicates, handles what happens whenever a new device is discovered by the BT
-  what it does is add a new element to the map object (peripherals), with the key (peripheral.id) and the value 
-  (peripheral) specified allowing to update the peripherals found
-  */
+
 
   scanForPeriodOfTime = () => {
     this.dataFlag = this.dataFlag ? this.dataFlag = false : this.dataFlag = true
@@ -153,20 +151,8 @@ class Ble extends Component {
   }
 
   handleDisconnectedPeripheral(data) {
-    let peripherals = this.state.peripherals;
-    let peripheral = peripherals.get(data.peripheral);
-    if (peripheral) {
-      peripheral.connected = false;
-      peripherals.set(peripheral.id, peripheral);
-      this.setState({ peripherals });
-    }
+    this.props.disconnectedPeripheral(data,this.state.peripherals)
   }
-  /*
-  This portion of code, as its name indicates, handles what happens whenever a user wants to disconnect a device
-  what it does is get the data from peripherals (array(key/value)) as it inherited the 'BleManagerDiscoverPeripheral'
-  data is possible to get data.peripheral for retrieving the key and the value and setting the 'connected' attribute 
-  to false managing to disconnect the device
-  */
 
   sendDataToServer = async (value, coilOne, coilTwo, id, datetime, activity) => {
     try {
@@ -194,12 +180,6 @@ class Ble extends Component {
     }
   }
 
-  /*
-
-    Sending data to the server
-  */
-
-  //alert('A list was submitted: ' + this.state.formvalue);
 
 
   async removeItemValue() {
@@ -211,9 +191,6 @@ class Ble extends Component {
       return false;
     }
   }
-  /*
-    Allows us to remove or clear out the local database with 'removeItem' method
-  */
 
   testConnection = (peripheral) => {
 
@@ -236,9 +213,7 @@ class Ble extends Component {
             let userVoltageData = []
             let coilOneData = []
             let coilTwoData = []
-            /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
-            characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
-            reading of the data from the device of interest */
+
             BleManager.startNotification(peripheral.id, serviceUUID, characteristicUUID).then(() => {
               BleManager.read(peripheral.id, serviceUUID, characteristicUUID)
                 .then(() => {
@@ -246,102 +221,7 @@ class Ble extends Component {
                     arrayDataChar = data.value.map(value => {
                       return String.fromCharCode(value)
                     })
-                    arrayDataChar = arrayDataChar.join('')
-                    let res = arrayDataChar.split("#")
-
-                    coilOneData = res[0]
-                    coilTwoData = res[1]
-                    userVoltageData = res[2]
-                    console.log(this.props.token)
-                    console.log(this.state.pickerValue)
-                    this.setState({
-                      dataDoubleVoltage: userVoltageData,
-                      dataDoubleVoltageCoilOne: coilOneData,
-                      dataDoubleVoltageCoilTwo: coilTwoData,
-                    })
-
-                    /* We are getting the data that the Microcontroller is sending and converting to a string chain from the
-                    Unicode numbers then by means of .join ('') we are deleting the commas and turning the list into one single
-                    element and sending that data to the state as a single value */
-                    try {
-                      let userData = this.state.userData
-                      userData[0].voltage = this.state.dataDoubleVoltage
-                      userData[0].coilOneData = this.state.dataDoubleVoltageCoilOne
-                      userData[0].coilTwoData = this.state.dataDoubleVoltageCoilTwo
-                      userData[0].id = this.state.userID
-                      this.setState({
-                        userData
-                      })
-                      /* Here we're getting the object of the state userData and assigning it to a local variable called userData 
-                      the we take the dataDoubleVoltage state value prevoiusly assigned (line 222) and the id (which is passed
-                      through the react navigation props (line 38) (UserScreen line 53) (HomeScreen father component line 77).*/
-                      AsyncStorage.getItem('databaseTest').then((value) => {
-                        if (this.state.status && this.dataFlag) {
-                          if (value !== null) {
-                            const existingData = JSON.parse(value)
-                            existingData.push(this.state.userData)
-                            const headers = Object.keys(existingData[0])
-                            for (const row of existingData) {
-                              const values = headers.map(header => {
-                                return row[header]
-                              })
-                              this.datRows.push(values)
-                              this.sendDataToServer(row.voltage, row.coilOneData, row.coilTwoData, row.id, null, this.state.pickerValue)
-                              this.refs.toast.show('Dato enviado 1', DURATION.LENGTH_LONG);
-                            }
-                            this.removeItemValue()
-                            NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
-                            NetInfo.isConnected.fetch().done(
-                              (isConnected) => { this.setState({ status: isConnected }); }
-                            )
-                            console.log('Base de datos local no vacía enviando todos los datos')
-                            this.refs.toast.show('Dato enviado 2', DURATION.LENGTH_LONG);
-                          } else {
-                              this.sendDataToServer(this.state.dataDoubleVoltage, this.state.dataDoubleVoltageCoilOne, this.state.dataDoubleVoltageCoilTwo, this.state.userID, date, this.state.pickerValue)
-                              this.removeItemValue()
-                              console.log('Base de datos local vacía enviando dato')
-                              counter = counter -1
-                            NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange)
-                            NetInfo.isConnected.fetch().done(
-                              (isConnected) => { this.setState({ status: isConnected }) }
-                            )
-                          }
-                        } else if (!this.state.status && this.dataFlag) {
-                          if (value !== null) {
-                            const existingData = JSON.parse(`{
-                              "voltage_coil_1": ${this.state.dataDoubleVoltageCoilOne},
-                              "voltage_coil_2": ${this.state.dataDoubleVoltageCoilTwo},
-                              "voltage_generated_by_user": ${this.state.dataDoubleVoltage},
-                              "activity": ${this.state.pickerValue},
-                            }`)
-                            existingData.push(this.state.userData[0])
-                            AsyncStorage.setItem('databaseTest', JSON.stringify(existingData)).then(() => {
-                              console.log('No hay conexión base de datos local no vacía ' + this.state.status)
-                              this.refs.toast.show('Dato NO enviado 1', DURATION.LENGTH_LONG);
-                            })
-                            NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
-                            NetInfo.isConnected.fetch().done(
-                              (isConnected) => { this.setState({ status: isConnected }) }
-                            );
-                          } else {
-                            AsyncStorage.setItem('databaseTest', JSON.stringify(this.state.userData)).then(() => {
-                              console.log('No hay conexión base de datos local vacía ' + this.state.status)
-                              this.refs.toast.show('Dato NO enviado 2', DURATION.LENGTH_LONG);
-                            })
-                            NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
-                            NetInfo.isConnected.fetch().done(
-                              (isConnected) => {
-                                this.setState({ status: isConnected });
-                              }
-                            );
-                          }
-                        } else {
-                          console.log('Por favor presiona el check para empezar el envío de datos')
-                        }
-                      })
-                    } catch (error) {
-                      this.refs.toast.show(error, DURATION.LENGTH_LONG);
-                    }
+                    console.log('Persistencia')
                   })
                 })
                 .catch((error) => {
@@ -465,10 +345,17 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    token: state.token
+    token: state.auth.token
   }
 }
 
-export default connect(mapStateToProps, null)(Ble)
+const mapDispatchToProps = dispatch => {
+  return {
+    discoveredPeripheral: (peripheral, peripherals) => dispatch(actions.handleDiscoverPeripheral(peripheral, peripherals)),
+    disconnectedPeripheral:(data,peripherals)=> dispatch(actions.handleDisconnectedPeripheral(data,peripherals))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Ble)
 
 

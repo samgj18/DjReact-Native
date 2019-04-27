@@ -55,7 +55,7 @@ export const handleDisconnectedPeripheral = (data, peripherals) => {
         if (peripheral) {
             peripheral.connected = false;
             peripherals.set(peripheral.id, peripheral);
-            dispatch(blePeripherals(peripherals))
+            dispatch(blePeripherals(null,peripherals))
         }
     }
 }
