@@ -1,4 +1,13 @@
+// AUTH ACTION_TYPES
+
 export const AUTH_START  = 'AUTH_START'
 export const AUTH_SUCCESS  = 'AUTH_SUCCESS'
 export const AUTH_FAIL  = 'AUTH_FAIL'
 export const AUTH_LOGOUT  = 'AUTH_LOGOUT'
+
+// BLE ACTION TYPES
+
+export const BLE_START = 'BLE_START'
+export const BLE_SCANNING = 'BLE_SCANNING'
+export const BLE_STATUS = 'BLE_STATUS'
+export const BLE_PERIPHERALS = 'BLE_PERIPHERALS'
