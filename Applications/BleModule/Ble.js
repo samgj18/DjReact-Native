@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { Icon } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import BleManager from 'react-native-ble-manager'
-import * as actions from '../Stores/Actions/ble'
+import { sendDataToServer, removeItemValue } from './BleUtils'
 
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
@@ -35,20 +35,16 @@ const BleManagerEmitter = new NativeEventEmitter(BleManagerModule)
 
 /* Subscribing events from BleManagerModule by creating a new NativeEventEmitter instance around this module, this
 will be helpful later the in code */
-
 const INITIAL_STATE = {
+  scanning: false,
+  peripherals: new Map(),
+  pickerValue: '',
+  status: '',
   dataDoubleVoltage: '',
   dataDoubleVoltageCoilOne: '',
   dataDoubleVoltageCoilTwo: '',
-  iconColor: 'red',
-  pickerValue: '',
-  scanning: false,
-  peripherals: new Map(),
-  status: '',
-
+  iconColor: 'red'
 }
-
-
 class Ble extends Component {
   constructor(props) {
     super(props)
@@ -63,15 +59,13 @@ class Ble extends Component {
         coilOneData: '',
         coilTwoData: '',
       }],
-      userID: userID
+      userID: userID,
     }
     this.dataFlag = false
     this.datRows = []
     this.handleDiscoverPeripheral = this.handleDiscoverPeripheral.bind(this)
     this.handleDisconnectedPeripheral = this.handleDisconnectedPeripheral.bind(this)
   }
-
-
 
   componentDidMount() {
     this.handlerDiscover = BleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral)
@@ -98,6 +92,7 @@ class Ble extends Component {
           })
         }
       })
+      removeItemValue()
     }
 
     /* In case of not having the permission to access to location (in Android Devices) this will ask the user for permission
@@ -121,6 +116,7 @@ class Ble extends Component {
   componentWillUnmount() {
     this.handlerDiscover.remove()
     this.handlerDisconnect.remove()
+    removeItemValue()
     NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange)
   }
 
@@ -129,71 +125,58 @@ class Ble extends Component {
   }
 
   handleDiscoverPeripheral(peripheral) {
-    this.props.discoveredPeripheral(peripheral, this.state.peripherals)
+    var peripherals = this.state.peripherals
+    if (!peripherals.has(peripheral.id)) {
+      peripherals.set(peripheral.id, peripheral)
+      this.setState({ peripherals })
+    }
   }
-
-
-  scanForPeriodOfTime = () => {
-    this.dataFlag = this.dataFlag ? this.dataFlag = false : this.dataFlag = true
-    this.setState({
-      iconColor: this.dataFlag ? iconColor = 'green' : iconColor = 'red'
-    })
-    console.log(this.dataFlag + this.state.iconColor)
+  /*
+  This portion of code, as its name indicates, handles what happens whenever a new device is discovered by the BT
+  what it does is add a new element to the map object (peripherals), with the key (peripheral.id) and the value 
+  (peripheral) specified allowing to update the peripherals found
+  */
+  handleDisconnectedPeripheral(data) {
+    let peripherals = this.state.peripherals;
+    let peripheral = peripherals.get(data.peripheral);
+    if (peripheral) {
+      peripheral.connected = false;
+      peripherals.set(peripheral.id, peripheral);
+      this.setState({ peripherals });
+    }
+  }
+  /*
+  This portion of code, as its name indicates, handles what happens whenever a user wants to disconnect a device
+  what it does is get the data from peripherals (array(key/value)) as it inherited the 'BleManagerDiscoverPeripheral'
+  data is possible to get data.peripheral for retrieving the key and the value and setting the 'connected' attribute 
+  to false managing to disconnect the device
+  */
+  scanForAPeriodOfTime = () => {
+    this.dataFlag ? this.dataFlag = false : this.dataFlag = true
+    this.dataFlag ? this.setState({ iconColor: 'green' }) : this.setState({ iconColor: 'red' })
     if (this.dataFlag) {
       setTimeout(() => {
         this.dataFlag = false
         this.setState({
           iconColor: 'red'
         })
-        console.log(this.dataFlag + this.state.iconColor)
-      }, 60 * 3000);
+      }, 10000)
     }
   }
 
-  handleDisconnectedPeripheral(data) {
-    this.props.disconnectedPeripheral(data,this.state.peripherals)
-  }
-
-  sendDataToServer = async (value, coilOne, coilTwo, id, datetime, activity) => {
-    try {
-      let config = {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${this.props.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          //user: id,
-          voltage_coil_1: coilOne,
-          voltage_coil_2: coilTwo,
-          voltage_generated_by_user: value,
-          activity,
-          //datetime
-        })
-      }
-      const URL = 'http://72.14.177.247/voltages/test-data/'
-      const response = await fetch(URL, config)
-      const serverResponse = await response.json()
-      console.log(serverResponse)
-    } catch (error) {
-      console.log(error)
+  startScan = () => {
+    console.log('Listando nuevos dispositivos')
+    if (!this.state.scanning) {
+      this.setState({ peripherals: new Map() });
+      BleManager.scan([], 20, true).then((results) => {
+        this.refs.toast.show('Escaneando dispositivos', DURATION.LENGTH_LONG);
+        this.setState({ scanning: true });
+      });
     }
   }
 
 
-
-  async removeItemValue() {
-    try {
-      await AsyncStorage.removeItem('databaseTest');
-      return true;
-    }
-    catch (exception) {
-      return false;
-    }
-  }
-
-  testConnection = (peripheral) => {
-
+  bleAction = (peripheral) => {
     if (peripheral) {
       if (peripheral.connected) {
         BleManager.disconnect(peripheral.id);
@@ -213,7 +196,10 @@ class Ble extends Component {
             let userVoltageData = []
             let coilOneData = []
             let coilTwoData = []
-
+            let counterData = 0
+            /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
+            characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
+            reading of the data from the device of interest */
             BleManager.startNotification(peripheral.id, serviceUUID, characteristicUUID).then(() => {
               BleManager.read(peripheral.id, serviceUUID, characteristicUUID)
                 .then(() => {
@@ -221,45 +207,59 @@ class Ble extends Component {
                     arrayDataChar = data.value.map(value => {
                       return String.fromCharCode(value)
                     })
-                    console.log('Persistencia')
+                    arrayDataChar = arrayDataChar.join('')
+                    let res = arrayDataChar.split("#")
+                    coilOneData = res[0]
+                    coilTwoData = res[1]
+                    userVoltageData = res[2]
+                    let btInfo = {
+                      "voltage_coil_1": `${coilOneData}`,
+                      "voltage_coil_2": `${coilTwoData}`,
+                      "voltage_generated_by_user": `${userVoltageData}`,
+                      "activity": `${this.state.pickerValue}`
+                    }
+                    if (this.dataFlag) {
+                      AsyncStorage.getItem('databaseTest').then((value) => {
+                        let existingData = JSON.parse(value)
+                        if (!existingData) {
+                          existingData = []
+                        }
+                        existingData.push(btInfo)
+                        AsyncStorage.setItem('databaseTest', JSON.stringify(existingData))
+                          .then(() => {
+                            console.log(existingData)
+                          })
+                          .catch(() => {
+                            console.log('There was an error saving the data')
+                          })
+                        if (counterData > 50) {
+                          sendDataToServer(this.props.token, value)
+                          removeItemValue()
+                          counterData = 0
+                        }
+                        counterData = counterData + 1
+                      })
+                        .catch((error) => {
+                          console.log(error)
+                        })
+                    }else{
+                      console.log('Habilte la bandera para enviar los datos')
+                    }
                   })
                 })
                 .catch((error) => {
-                  console.log('Connection error', error);
-                  this.refs.toast.show(error, DURATION.LENGTH_LONG);
+                  console.log(error);
                 });
             }).catch((error) => {
-              console.log('Connection error', error);
-              this.refs.toast.show(error, DURATION.LENGTH_LONG);
+              console.log(error);
             });
           });
         }).catch((error) => {
-          console.log('Connection error', error);
-          this.refs.toast.show(error, DURATION.LENGTH_LONG);
+          console.log(error);
         });
       }
     }
   }
-
-  startScan = () => {
-    if (!this.state.scanning) {
-      this.setState({ peripherals: new Map() });
-      BleManager.scan([], 20, true).then((results) => {
-        this.refs.toast.show('Escaneando dispositivos', DURATION.LENGTH_LONG);
-        this.setState({ scanning: true });
-      });
-    }
-  }
-  /*
-    It handles the scanning process, what it does is calling the 'BleManager.scan' method of the BleManager Module
-    with three parameters:
-    1.serviceUUIDs - Array of String - the UUIDs of the services to looking for. 
-    2.seconds - Integer - the amount of seconds to scan.
-    3.allowDuplicates - Boolean - [iOS only] allow duplicates in device scanning (Not required)
-  */
-
-
-
 
   render() {
     const list = Array.from(this.state.peripherals.values());
@@ -272,14 +272,15 @@ class Ble extends Component {
             name='bluetooth'
             type='font-awesome'
             color='rgba(41, 128, 185,1.0)'
-            action={this.startScan.bind(this)}
+            onPress={this.startScan.bind(this)}
           />
           <Icon
             reverse
             name='check'
             type='font-awesome'
             color={this.state.iconColor}
-            onPress={this.scanForPeriodOfTime.bind(this)} />
+            onPress={this.scanForAPeriodOfTime.bind(this)}
+          />
         </View>
         <View style={styles.boxTwo}>
           <Picker
@@ -290,7 +291,8 @@ class Ble extends Component {
             <Picker.Item label='Caminar' value='1' />
             <Picker.Item label='Saltar' value='2' />
             <Picker.Item label='Correr' value='3' />
-            <Picker.Item label='Subir o Bajar escaleras' value='4' />
+            <Picker.Item label='Permancer quieto' value='4' />
+            <Picker.Item label='Subir o Bajar escaleras' value='5' />
           </Picker>
         </View>
         <ListView
@@ -299,7 +301,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.testConnection(item)}>
+              <TouchableHighlight onPress={() => this.bleAction(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>
@@ -339,7 +341,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   row: {
-    margin: 10
+    margin: 10,
+    borderRadius: 12
   }
 });
 
@@ -349,13 +352,6 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    discoveredPeripheral: (peripheral, peripherals) => dispatch(actions.handleDiscoverPeripheral(peripheral, peripherals)),
-    disconnectedPeripheral:(data,peripherals)=> dispatch(actions.handleDisconnectedPeripheral(data,peripherals))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Ble)
+export default connect(mapStateToProps, null)(Ble)
 
 
