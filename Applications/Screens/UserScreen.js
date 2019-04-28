@@ -14,7 +14,7 @@ class Login extends Component {
     super(props)
 
     const { navigation } = this.props;
-    const email = navigation.getParam('email');
+    const email = navigation.getParam('email','visitor@gmail.com');
 
     this.state = {
       email: email,

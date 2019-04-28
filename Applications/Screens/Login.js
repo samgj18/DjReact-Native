@@ -28,15 +28,15 @@ class Login extends Component {
         })
 
         this.user = t.struct({
-            email: FormValidation.email,
+            name: this.name,
             password: FormValidation.password,
         })
         this.options = {
             fields: {
-                email: {
-                    label: 'Correo',
-                    help: 'Introduce un correo',
-                    error: 'Introduce un correo válido',
+                name: {
+                    label: 'Usuario',
+                    help: 'Introduce tu usuario',
+                    error: 'Introduce un usuario válido',
                     autoCapitalize: 'none',
                 },
                 password: {
@@ -64,7 +64,7 @@ class Login extends Component {
 
     async login() {
         if (this.validate) {
-            this.props.onAuth(this.validate.email, this.validate.password);
+            this.props.onAuth(this.validate.name, this.validate.password);
         }
     }
     /* React Native provides the Fetch API for your networking needs. 
@@ -136,7 +136,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (email, password) => dispatch(actions.authLogin(email, password))
+        onAuth: (username, password) => dispatch(actions.authLogin(username, password))
     }
 }
 

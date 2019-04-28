@@ -74,7 +74,7 @@ class Register extends Component {
 
     gotoUserScreen = () => {
         this.props.navigation.navigate('LandScreen', {
-            email: this.state.user.email,
+            email: this.state.user.nombre,
         });
     }
     /* HomeScreen inheritance, no need to createSwitchNavigator or createStackNavigator. */

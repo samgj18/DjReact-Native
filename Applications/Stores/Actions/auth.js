@@ -39,7 +39,7 @@ export const checkAuthTimeout = expirationTime => {
     }
 }
 
-export const authLogin = (email, password) => {
+export const authLogin = (username, password) => {
     return async dispatch => {
         dispatch(authStart());
         try {
@@ -50,12 +50,13 @@ export const authLogin = (email, password) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: email,
+                    username: username,
                     password: password
                 })
             }
             const URL = 'http://72.14.177.247/rest-auth/login/'
             const response = await fetch(URL, config)
+            console.log(response)
             const userInfo = await response.json()
             const token = userInfo.key
             const idInt = userInfo.user.id
@@ -97,7 +98,7 @@ export const authSignUp = (username, email, password1, password2) => {
             const response = await fetch(URL, config)
             const tokenJSON = await response.json()
             const token = tokenJSON.key
-            const id = await getIdAuth(email, password1)
+            const id = await getIdAuth(username, password1)
             const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
             if (token == null) {
                 dispatch(authFail('Datos incorrectos o mal ingresados'))
@@ -135,7 +136,7 @@ export const authCheckState = () => {
 
 
 
-const getIdAuth = async (email, password) => {
+const getIdAuth = async (username, password) => {
     let config = {
         method: 'POST',
         headers: {
@@ -143,7 +144,7 @@ const getIdAuth = async (email, password) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            email: email,
+            username: username,
             password: password
         })
     }
