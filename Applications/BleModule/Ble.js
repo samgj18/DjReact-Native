@@ -160,7 +160,7 @@ class Ble extends Component {
         this.setState({
           iconColor: 'red'
         })
-      }, 10000)
+      }, 180000)
     }
   }
 
