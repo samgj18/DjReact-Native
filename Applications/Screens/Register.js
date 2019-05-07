@@ -71,7 +71,7 @@ class Register extends Component {
 
     /* tcomb-form-native is the library that allows us to create forms in a faster way only by setting the structure
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
-    static navigationOptions = { title: '⚛' };
+    static navigationOptions = { title: '🇨🇴' };
 
     gotoLogin = () => {
         const navigateAction = NavigationActions.navigate({

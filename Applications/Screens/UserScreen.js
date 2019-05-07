@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Dimensions, Animated } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { connect } from 'react-redux';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
@@ -9,15 +9,12 @@ import * as actions from '../Stores/Actions/auth'
 
 
 
-const { width, height } = Dimensions.get('screen')
-
-
-class Login extends Component {
+class UserScreen extends Component {
   constructor(props) {
     super(props)
 
     const { navigation } = this.props;
-    const email = navigation.getParam('email','visitor@gmail.com');
+    const email = navigation.getParam('email', 'visitor@gmail.com');
 
     this.state = {
       email: email,
@@ -35,16 +32,8 @@ class Login extends Component {
     }
   }
 
-
-  static navigationOptions = { title: '', header: null };
   gotoUserScreen() {
     this.props.navigation.navigate('Landing');
-  }
-
-  gotoBleConf() {
-    this.props.navigation.navigate('BleScreen', {
-      userID: this.id,
-    });
   }
 
   dropdownShow() {
@@ -80,24 +69,6 @@ class Login extends Component {
       return (
         <View style={styles.MainContainer}>
           <View style={styles.UserHoover}>
-            <Icon
-              reverse
-              name='leaf'
-              type='font-awesome'
-              color='rgba(58, 227, 116, 0.7)'
-              onPress={() => console.log('hello')} />
-            <Icon
-              reverse
-              name='send'
-              type='font-awesome'
-              color='#2f3542'
-              onPress={() => console.log('hello')} />
-            <Icon
-              reverse
-              name='bluetooth-b'
-              type='font-awesome'
-              color='#3498db'
-              onPress={this.gotoBleConf.bind(this)} />
             <Icon
               reverse
               name='ellipsis-h'
@@ -164,5 +135,5 @@ const mapDispatchToProps = dispatch => {
     onAuth: () => dispatch(actions.logout())
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)
 
