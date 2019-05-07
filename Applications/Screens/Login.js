@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'react-native-elements'
+import { StyleSheet, View } from 'react-native'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FormValidation from '../Utils/Validation';
 import { connect } from 'react-redux';
 import t from 'tcomb-form-native'
-import BackgroundImage from '../Utils/BackgroundImage';
-import LoginImage from '../Assets/Images/Register.png'
 import * as  actions from '../Stores/Actions/auth'
 
 const Form = t.form.Form;
@@ -53,7 +52,7 @@ class Login extends Component {
 
     /* tcomb-form-native is the library that allows us to create forms in a faster way only by setting the structure
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
-    static navigationOptions = { title: 'Entrar' };
+    static navigationOptions = { title: '⚛' };
 
     gotoUserScreen = () => {
         this.props.navigation.navigate('LandScreen', {
@@ -84,7 +83,7 @@ class Login extends Component {
 
     render() {
         return (
-            <BackgroundImage source={LoginImage}>
+            <View style={styles.MainContainer}>
                 <Card
                     wrapperStyle={{ paddingLeft: 10 }}
                     title='Ingresa'
@@ -96,31 +95,33 @@ class Login extends Component {
                         onChange={(v) => this.onChange(v)}
                         value={this.state.user}
                     />
+                </Card>
+                <View style={styles.Button}>
                     <Button
                         icon={
                             <Icon
                                 name='sign-in'
-                                size={30}
-                                color='rgba(58, 227, 116, 0.7)'
+                                size={25}
+                                color='#F0700A'
                             />
                         }
                         title="Entrar"
                         onPress={this.login.bind(this)}
-                        type='outline'
-                        raised
+                        type='clear'
                     />
-                    <Toast
-                        ref="toast"
-                        style={{ backgroundColor: 'transparent' }}
-                        position='top'
-                        positionValue={200}
-                        fadeInDuration={750}
-                        fadeOutDuration={1000}
-                        opacity={0.8}
-                        textStyle={{ color: 'black' }}
-                    />
-                </Card>
-            </BackgroundImage>
+                </View>
+
+                <Toast
+                    ref="toast"
+                    style={{ backgroundColor: 'transparent' }}
+                    position='top'
+                    positionValue={200}
+                    fadeInDuration={750}
+                    fadeOutDuration={1000}
+                    opacity={0.8}
+                    textStyle={{ color: 'black' }}
+                />
+            </View>
         )
     }
 }
@@ -139,5 +140,18 @@ const mapDispatchToProps = dispatch => {
         onAuth: (username, password) => dispatch(actions.authLogin(username, password))
     }
 }
+const styles = StyleSheet.create({
+    MainContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingTop: 50,
+    },
+    Button: {
+        flex: 0.5,
+        paddingTop: 30,
+    },
+
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)
+

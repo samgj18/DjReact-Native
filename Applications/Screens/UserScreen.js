@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Dimensions, Animated } from 'react-native'
 import { connect } from 'react-redux';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
@@ -7,6 +7,9 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import PreLoader from '../Components/PreLoader'
 import * as actions from '../Stores/Actions/auth'
 
+
+
+const { width, height } = Dimensions.get('screen')
 
 
 class Login extends Component {

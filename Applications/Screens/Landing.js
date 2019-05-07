@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ImageBackground, Text, Image } from 'react-native'
+import { StyleSheet, ImageBackground, Image } from 'react-native'
 import { NavigationActions } from 'react-navigation'
+import { Text, View } from 'react-native-animatable'
 import Seed from '../Assets/Images/Icon1.png'
 import Sketch from '../Assets/Images/Icon2.png'
+
+
 
 export default class Landing extends Component {
 
@@ -17,7 +20,10 @@ export default class Landing extends Component {
     render() {
         return (
             <View style={styles.MainContainer}>
-                <View style={styles.BoxOne}>
+                <View style={styles.BoxOne}
+                animation='pulse' 
+                delay={3000}
+                >
                     <Image
                         style={{ width: 200, height: 180 }}
                         source={Sketch}
@@ -29,11 +35,12 @@ export default class Landing extends Component {
                         source={Seed}
                     >
                         <Text
+                            animation='pulse' 
+                            delay={3000}
                             style={[styles.Title]}
                             onPress={this.gotoRegister.bind(this)}
                         >¡Iniciemos!</Text>
                     </ImageBackground>
-
                 </View>
 
             </View>

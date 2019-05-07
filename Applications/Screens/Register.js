@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { Card, Button} from 'react-native-elements'
+import { Card, Button, Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import t from 'tcomb-form-native'
+import { NavigationActions } from 'react-navigation'
+import { StyleSheet, View } from 'react-native'
 import FormValidation from '../Utils/Validation';
-import BackgroundImage from '../Utils/BackgroundImage';
-import RegisterImage from '../Assets/Images/Register.png'
 import * as actions from '../Stores/Actions/auth'
 
 import { connect } from 'react-redux';
@@ -22,7 +22,7 @@ class Register extends Component {
                 nombre: '',
                 email: '',
                 password: ''
-            }
+            },
         }
         this.samepassword = t.refinement(t.String, (s) => {
             return s === this.state.user.password
@@ -70,7 +70,7 @@ class Register extends Component {
 
     /* tcomb-form-native is the library that allows us to create forms in a faster way only by setting the structure
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
-    static navigationOptions = { title: 'Registrarse' };
+    static navigationOptions = { title: '⚛' };
 
     gotoLogin = () => {
         const navigateAction = NavigationActions.navigate({
@@ -99,45 +99,71 @@ class Register extends Component {
    and they are fixed throughout the lifetime of a component. For data that is going to change, we have to use state.
    In general, you should initialize state in the constructor, and then call setState when you want to change it. */
 
+
+
+
     render() {
         return (
-            <BackgroundImage source={RegisterImage}>
+            <View style={styles.MainContainer}
+            >
                 <Card
                     wrapperStyle={{ paddingLeft: 10 }}
                     title='Regístrate'
                 >
-                    <Form
-                        ref="form"
-                        type={this.user}
-                        options={this.options}
-                        onChange={(v) => this.onChange(v)}
-                        value={this.state.user}
-                    />
+                    <View>
+                        <Form
+                            ref="form"
+                            type={this.user}
+                            options={this.options}
+                            onChange={(v) => this.onChange(v)}
+                            value={this.state.user}
+                        />
+                    </View>
+
+
+                </Card>
+                <View style={styles.Button}>
                     <Button
                         icon={
                             <Icon
                                 name='connectdevelop'
-                                size={30}
-                                color='rgba(58, 227, 116, 0.7)'
+                                size={25}
+                                color='#F0700A'
                             />
                         }
-                        title="Entrar"
+                        title='Regístrame'
                         onPress={this.register.bind(this)}
-                        type='outline'
-                        raised
+                        type='clear'
                     />
-                    <Toast
-                        ref="toast"
-                        style={{ backgroundColor: 'transparent' }}
-                        position='top'
-                        positionValue={200}
-                        fadeInDuration={750}
-                        fadeOutDuration={1000}
-                        opacity={0.8}
-                        textStyle={{ color: 'black' }}
+                </View>
+                <View style={styles.Login}>
+                    <Text style={styles.Text}>
+                        ¿Ya tienes una cuenta?
+                    </Text>
+                    <Button
+                        icon={
+                            <Icon
+                                name='sign-in'
+                                size={25}
+                                color='#F0700A'
+                            />
+                        }
+                        title='Inicia Sesión'
+                        onPress={this.gotoLogin.bind(this)}
+                        type='clear'
                     />
-                </Card>
-            </BackgroundImage>
+                </View>
+                <Toast
+                    ref="toast"
+                    style={{ backgroundColor: 'transparent' }}
+                    position='top'
+                    positionValue={200}
+                    fadeInDuration={750}
+                    fadeOutDuration={1000}
+                    opacity={0.8}
+                    textStyle={{ color: 'black' }}
+                />
+            </View>
         )
     }
 }
@@ -155,4 +181,24 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
+
+
+const styles = StyleSheet.create({
+    MainContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingTop: 50,
+    },
+    Button: {
+        flex: 0.5,
+        paddingTop: 30,
+    },
+    Login: {
+        flex: 1,
+        alignItems: 'center'
+    },
+    Text: {
+        fontSize: 20
+    }
+})
 export default connect(mapStateToProps, mapDispatchToProps)(Register)
