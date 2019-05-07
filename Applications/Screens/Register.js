@@ -72,13 +72,12 @@ class Register extends Component {
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
     static navigationOptions = { title: 'Registrarse' };
 
-    gotoUserScreen = () => {
-        this.props.navigation.navigate('LandScreen', {
-            email: this.state.user.nombre,
-        });
+    gotoLogin = () => {
+        const navigateAction = NavigationActions.navigate({
+            routeName: 'Login'
+        })
+        this.props.navigation.dispatch(navigateAction)
     }
-    /* HomeScreen inheritance, no need to createSwitchNavigator or createStackNavigator. */
-
 
     register() {
         this.props.onAuth(this.validate.name, this.validate.email, this.validate.password, this.validate.password);

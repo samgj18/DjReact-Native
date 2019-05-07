@@ -35,7 +35,7 @@ class Login extends Component {
 
   static navigationOptions = { title: '', header: null };
   gotoUserScreen() {
-    this.props.navigation.navigate('Start');
+    this.props.navigation.navigate('Landing');
   }
 
   gotoBleConf() {

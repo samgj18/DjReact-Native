@@ -1,4 +1,4 @@
-import HomeScreen from '../Screens/HomeScreen'
+import Landing from '../Screens/Landing'
 import LoginScreen from '../Screens/Login'
 import RegisterScreen from '../Screens/Register'
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -7,8 +7,8 @@ import { createAppContainer, createStackNavigator } from 'react-navigation';
 
 const RootStack = createStackNavigator(
   {
-    Start: {
-      screen: HomeScreen
+    Landing: {
+      screen: Landing
     },
     Login: {
       screen: LoginScreen
@@ -18,6 +18,7 @@ const RootStack = createStackNavigator(
     },
   }
 );
+
 
 
 export default createAppContainer(RootStack);
