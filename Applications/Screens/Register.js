@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
-import { Card, Button, Text } from 'react-native-elements'
+import { Card, Button, Text, Image } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import t from 'tcomb-form-native'
 import { NavigationActions } from 'react-navigation'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Dimensions } from 'react-native'
 import FormValidation from '../Utils/Validation';
 import * as actions from '../Stores/Actions/auth'
-
 import { connect } from 'react-redux';
+import ResourceOne from '../Assets/Images/Resource1.png'
+import ResourceTwo from '../Assets/Images/Resource2.png'
 
-
+const {width, height} = Dimensions.get('window')
 const Form = t.form.Form;
 
 class Register extends Component {
@@ -104,8 +105,11 @@ class Register extends Component {
 
     render() {
         return (
-            <View style={styles.MainContainer}
-            >
+            <View style={styles.MainContainer}>
+                <Image
+                    source={ResourceTwo}
+                    style={{ width: 60, height: 60, alignSelf: 'center' }}
+                />
                 <Card
                     wrapperStyle={{ paddingLeft: 10 }}
                     title='Regístrate'
@@ -191,7 +195,6 @@ const styles = StyleSheet.create({
     },
     Button: {
         flex: 0.5,
-        paddingTop: 30,
     },
     Login: {
         flex: 1,
@@ -199,6 +202,6 @@ const styles = StyleSheet.create({
     },
     Text: {
         fontSize: 20
-    }
+    },
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Register)

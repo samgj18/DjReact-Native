@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'react-native-elements'
-import { StyleSheet, View } from 'react-native'
+import { Card, Button, Image } from 'react-native-elements'
+import { StyleSheet, View, Dimensions} from 'react-native'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FormValidation from '../Utils/Validation';
 import { connect } from 'react-redux';
 import t from 'tcomb-form-native'
 import * as  actions from '../Stores/Actions/auth'
+import ResourceOne from '../Assets/Images/Resource1.png'
+import ResourceTwo from '../Assets/Images/Resource2.png'
 
+const {width, height} = Dimensions.get('window')
 const Form = t.form.Form;
 
 class Login extends Component {
@@ -84,6 +87,13 @@ class Login extends Component {
     render() {
         return (
             <View style={styles.MainContainer}>
+                <View style={styles.BackImageOne}>
+                    <Image
+                        source={ResourceTwo}
+                        style={{ width: 100, height: 100, alignSelf: 'center' }}
+                    />
+                </View>
+
                 <Card
                     wrapperStyle={{ paddingLeft: 10 }}
                     title='Ingresa'
@@ -110,6 +120,12 @@ class Login extends Component {
                         type='clear'
                     />
                 </View>
+                <View style={styles.BackImageTwo}>
+                    <Image
+                        source={ResourceOne}
+                        style={{ width: width, height: height, alignSelf: 'center' }}
+                    />
+                </View>
 
                 <Toast
                     ref="toast"
@@ -122,6 +138,7 @@ class Login extends Component {
                     textStyle={{ color: 'black' }}
                 />
             </View>
+
         )
     }
 }
@@ -150,7 +167,12 @@ const styles = StyleSheet.create({
         flex: 0.5,
         paddingTop: 30,
     },
-
+    BackImageOne: {
+        flex: 1,
+    },
+    BackImageTwo: {
+        flex: 1,
+    }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)
