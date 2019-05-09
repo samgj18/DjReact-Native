@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, Button, Image } from 'react-native-elements'
-import { StyleSheet, View, Dimensions} from 'react-native'
+import { StyleSheet, View, Dimensions } from 'react-native'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FormValidation from '../Utils/Validation';
@@ -10,7 +10,7 @@ import * as  actions from '../Stores/Actions/auth'
 import ResourceOne from '../Assets/Images/Resource1.png'
 import ResourceTwo from '../Assets/Images/Resource2.png'
 
-const {width, height} = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 const Form = t.form.Form;
 
 class Login extends Component {
@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
     MainContainer: {
         flex: 1,
         justifyContent: 'center',
-        paddingTop: 50,
     },
     Button: {
         flex: 0.5,

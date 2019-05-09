@@ -4,14 +4,12 @@ import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import t from 'tcomb-form-native'
 import { NavigationActions } from 'react-navigation'
-import { StyleSheet, View, Dimensions } from 'react-native'
-import FormValidation from '../Utils/Validation';
-import * as actions from '../Stores/Actions/auth'
+import { StyleSheet, View, ScrollView } from 'react-native'
 import { connect } from 'react-redux';
-import ResourceOne from '../Assets/Images/Resource1.png'
+import FormValidation from '../Utils/Validation'
+import * as actions from '../Stores/Actions/auth'
 import ResourceTwo from '../Assets/Images/Resource2.png'
 
-const {width, height} = Dimensions.get('window')
 const Form = t.form.Form;
 
 class Register extends Component {
@@ -105,7 +103,7 @@ class Register extends Component {
 
     render() {
         return (
-            <View style={styles.MainContainer}>
+            <ScrollView style={styles.MainContainer}>
                 <Image
                     source={ResourceTwo}
                     style={{ width: 60, height: 60, alignSelf: 'center' }}
@@ -167,7 +165,7 @@ class Register extends Component {
                     opacity={0.8}
                     textStyle={{ color: 'black' }}
                 />
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -190,14 +188,12 @@ const mapDispatchToProps = dispatch => {
 const styles = StyleSheet.create({
     MainContainer: {
         flex: 1,
-        justifyContent: 'center',
-        paddingTop: 50,
     },
     Button: {
-        flex: 0.5,
+        paddingTop: 10
     },
     Login: {
-        flex: 1,
+        paddingTop: 10,
         alignItems: 'center'
     },
     Text: {
