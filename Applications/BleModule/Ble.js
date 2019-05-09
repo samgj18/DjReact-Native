@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {
   StyleSheet,
-  Text,
   View,
   TouchableHighlight,
   NativeEventEmitter,
@@ -11,6 +10,7 @@ import {
   PermissionsAndroid,
   Picker
 } from 'react-native'
+import { Text } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage'
 import NetInfo from "@react-native-community/netinfo";
 import { connect } from 'react-redux';
@@ -242,7 +242,7 @@ class Ble extends Component {
                         .catch((error) => {
                           console.log(error)
                         })
-                    }else{
+                    } else {
                       console.log('Habilte la bandera para enviar los datos')
                     }
                   })
@@ -266,6 +266,7 @@ class Ble extends Component {
     const dataSource = ds.cloneWithRows(list);
     return (
       <View style={styles.MainContainer}>
+        <Text style={{ paddingTop: 50, alignSelf: 'center' }} h4>¡Conéctate con tu dispositivo!</Text>
         <View style={styles.boxOne}>
           <Icon
             reverse
@@ -336,6 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 11,
+    paddingTop: 30
   },
   boxTwo: {
     width: '100%',

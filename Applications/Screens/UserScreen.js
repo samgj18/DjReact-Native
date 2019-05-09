@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { connect } from 'react-redux';
+import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
 import ModalDropdown from 'react-native-modal-dropdown';
@@ -21,15 +22,6 @@ class UserScreen extends Component {
       dropdown: true
     }
     this.id = parseInt(this.props.id)
-  }
-
-
-  async componentDidMount() {
-    if (this.id) {
-      this.setState({
-        isLoading: false
-      })
-    }
   }
 
   gotoUserScreen() {
@@ -69,6 +61,7 @@ class UserScreen extends Component {
       return (
         <View style={styles.MainContainer}>
           <View style={styles.UserHoover}>
+            <Text h4>Dashboard</Text>
             <Icon
               reverse
               name='ellipsis-h'
@@ -81,8 +74,6 @@ class UserScreen extends Component {
               options={['Cerrar sesión']}
               onSelect={this.dropdownOnSelect.bind(this)}
             />
-          </View>
-          <View style={styles.UserDashboard}>
           </View>
           <Toast
             ref="toast"
@@ -112,13 +103,8 @@ const styles = StyleSheet.create({
   },
   UserHoover: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-end'
-  },
-  UserDashboard: {
-    flex: 5,
-    justifyContent: 'flex-end',
-    marginBottom: 15
+    alignItems: 'center',
+    paddingTop: 50
   }
 });
 
