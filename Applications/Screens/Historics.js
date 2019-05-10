@@ -71,8 +71,8 @@ class Historics extends Component {
     }
 
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
-        const response = await fetchDataFromServer('5754db9208cf223a2a40220b1a6fb65d419fd437',
-            `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+        const response = await fetchDataFromServer(this.props.token,
+            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
         this.setState({
             data: response
         }, () => {
@@ -84,8 +84,6 @@ class Historics extends Component {
 
 
     render() {
-
-
 
         const colors = ['rgba(38, 222, 129,1.0)', 'rgba(38, 222, 129,0.6)',]
         const keys = ['voltageCoilOne', 'voltageCoilTwo',]
