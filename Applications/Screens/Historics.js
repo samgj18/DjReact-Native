@@ -19,7 +19,10 @@ class Historics extends Component {
             isDateTimePickerVisible: false,
             initialDatePicked: '',
             endDatePicked: '',
-            header: 'Selecciona la fecha inicial'
+            header: 'Selecciona la fecha inicial',
+            voltageCoilOne: null,
+            voltageCoilTwo: null,
+
         }
         this.counter = 0
     }
@@ -69,6 +72,21 @@ class Historics extends Component {
         })
     }
 
+    handleDataFetch = async (initialDatePicked, endDatePicked) => {
+        const response = await fetchDataFromServer('5754db9208cf223a2a40220b1a6fb65d419fd437',
+            `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+        this.setState({
+            voltageCoilOne: response[0]
+        }, () => {
+            this.setState({
+                voltageCoilTwo: response[1]
+            }, () => {
+                console.log(this.state.voltageCoilOne)
+                console.log(this.state.voltageCoilTwo)
+                this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
+            })
+        })
+    }
 
 
 
@@ -98,8 +116,7 @@ class Historics extends Component {
                                 name='send'
                                 type='font-awesome'
                                 color='black'
-                                onPress={() => fetchDataFromServer(this.props.token,
-                                    `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)} />
+                                onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
                         </View>
                         <DateTimePicker
                             isVisible={this.state.isDateTimePickerVisible}

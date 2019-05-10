@@ -24,7 +24,7 @@ class App extends React.Component {
       return (<Preloader />)
     }
 
-    if (this.props.isAuthenticated) {
+    if (true) {//this.props.isAuthenticated) {
       return <Logged />
     } else {
       return <Guest />
