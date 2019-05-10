@@ -6,10 +6,10 @@ import Toast, { DURATION } from 'react-native-easy-toast'
 import PreLoader from '../Components/PreLoader'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import { Icon } from 'react-native-elements'
+import { StackedAreaChart, YAxis } from 'react-native-svg-charts'
+import * as shape from 'd3-shape'
 
 import { fetchDataFromServer } from '../BleModule/BleUtils'
-
-
 
 class Historics extends Component {
     constructor(props) {
@@ -20,9 +20,7 @@ class Historics extends Component {
             initialDatePicked: '',
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
-            voltageCoilOne: null,
-            voltageCoilTwo: null,
-
+            data: [{}]
         }
         this.counter = 0
     }
@@ -76,15 +74,9 @@ class Historics extends Component {
         const response = await fetchDataFromServer('5754db9208cf223a2a40220b1a6fb65d419fd437',
             `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
         this.setState({
-            voltageCoilOne: response[0]
+            data: response
         }, () => {
-            this.setState({
-                voltageCoilTwo: response[1]
-            }, () => {
-                console.log(this.state.voltageCoilOne)
-                console.log(this.state.voltageCoilTwo)
-                this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
-            })
+            this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
         })
     }
 
@@ -92,6 +84,16 @@ class Historics extends Component {
 
 
     render() {
+
+
+
+        const colors = ['rgba(38, 222, 129,1.0)', 'rgba(38, 222, 129,0.6)',]
+        const keys = ['voltageCoilOne', 'voltageCoilTwo',]
+        const svgs = [
+            { onPress: () => this.refs.toast.show('Voltaje bobina 1', DURATION.LENGTH_SHORT) },
+            { onPress: () => this.refs.toast.show('Voltaje bobina 2', DURATION.LENGTH_SHORT) },
+        ]
+
         const { initialDatePicked, endDatePicked } = this.state
         if (this.props.loading) {
             return (
@@ -110,20 +112,44 @@ class Historics extends Component {
                             color='black'
                             onPress={this.showDateTimePicker}
                         />
-                        <View style={styles.Consulta}>
-                            <Icon
-                                reverse
-                                name='send'
-                                type='font-awesome'
-                                color='black'
-                                onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
-                        </View>
-                        <DateTimePicker
-                            isVisible={this.state.isDateTimePickerVisible}
-                            onConfirm={this.handleDatePicked}
-                            onCancel={this.hideDateTimePicker}
+                    </View>
+                    <View style={styles.Charts}>
+                        <YAxis
+                            data={[1, 2]}
+                            contentInset={{ top: 20, bottom: 20 }}
+                            svg={{
+                                fill: 'grey',
+                                fontSize: 10,
+                            }}
+                            numberOfTicks={1}
+                            formatLabel={value => `${value} Bobina `}
+                        />
+                        <StackedAreaChart
+                            style={{ height: 230, paddingVertical: 16, flex: 1 }}
+                            data={this.state.data}
+                            keys={keys}
+                            colors={colors}
+                            curve={shape.curveNatural}
+                            showGrid={true}
+                            svgs={svgs}
                         />
                     </View>
+                    <View style={styles.Consulta}>
+                        <Icon
+                            reverse
+                            name='send'
+                            type='font-awesome'
+                            color='black'
+                            onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
+                    </View>
+
+                    <DateTimePicker
+                        isVisible={this.state.isDateTimePickerVisible}
+                        onConfirm={this.handleDatePicked}
+                        onCancel={this.hideDateTimePicker}
+                    />
+
+
                     <Toast
                         ref="toast"
                         style={{ backgroundColor: 'transparent' }}
@@ -156,6 +182,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-end'
+    },
+    Charts: {
+        flex: 1,
+        flexDirection: 'row'
     }
 });
 

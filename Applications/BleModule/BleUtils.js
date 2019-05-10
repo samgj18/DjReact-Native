@@ -20,23 +20,6 @@ export const sendDataToServer = async (token, data) => {
 }
 
 
-const configureInfoFromData = (data) => {
-  const headers = Object.keys(data[0])
-  const voltageCoilOne = []
-  const voltageCoilTwo = []
-
-  for (const row of data) {
-    const values = headers.map(header => {
-      return row[header]
-    })
-    voltageCoilOne.push(values[0])
-    voltageCoilTwo.push(values[1])
-  }
-  return [
-    voltageCoilOne,
-    voltageCoilTwo,
-  ]
-}
 
 export const fetchDataFromServer = async (token, url) => {
   try {
@@ -54,12 +37,9 @@ export const fetchDataFromServer = async (token, url) => {
       voltageCoilOne: row.voltage_coil_1,
       voltageCoilTwo: row.voltage_coil_2
     }))
-    const dataSeparated = configureInfoFromData(data)
-    return [
-      dataSeparated[0],
-      dataSeparated[1]
-    ]
+    return (data)
   } catch (error) {
+    console.log(error)
   }
 }
 
