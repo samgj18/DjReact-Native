@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Card, Button, Image } from 'react-native-elements'
+import { Card, Button, Image, Text } from 'react-native-elements'
 import { StyleSheet, View, Dimensions } from 'react-native'
 import Toast, { DURATION } from 'react-native-easy-toast'
+import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FormValidation from '../Utils/Validation';
 import { connect } from 'react-redux';
@@ -79,40 +80,49 @@ class Login extends Component {
         this.validate = this.refs.form.getValue();
     }
 
+
     /* This onChange function is the core of React concept, *states*. 
     There are two types of data that control a component: props and state. props are set by the parent 
     and they are fixed throughout the lifetime of a component. For data that is going to change, we have to use state.
     In general, you should initialize state in the constructor, and then call setState when you want to change it. */
 
+    gotoRegister = () => {
+        const navigateAction = NavigationActions.navigate({
+            routeName: 'Register'
+        })
+        this.props.navigation.dispatch(navigateAction)
+    }
     render() {
         return (
             <View style={styles.MainContainer}>
                 <View style={styles.BackImageOne}>
                     <Image
                         source={ResourceTwo}
-                        style={{ width: 100, height: 100, alignSelf: 'center' }}
+                        style={{ width: 60, height: 60, alignSelf: 'center', marginTop: 30 }}
                     />
                 </View>
+                <View style={styles.Card}>
+                    <Card
+                        wrapperStyle={{ paddingLeft: 10 }}
+                        title='Ingresa'
+                    >
+                        <Form
+                            ref="form"
+                            type={this.user}
+                            options={this.options}
+                            onChange={(v) => this.onChange(v)}
+                            value={this.state.user}
+                        />
+                    </Card>
+                </View>
 
-                <Card
-                    wrapperStyle={{ paddingLeft: 10 }}
-                    title='Ingresa'
-                >
-                    <Form
-                        ref="form"
-                        type={this.user}
-                        options={this.options}
-                        onChange={(v) => this.onChange(v)}
-                        value={this.state.user}
-                    />
-                </Card>
                 <View style={styles.Button}>
                     <Button
                         icon={
                             <Icon
                                 name='sign-in'
                                 size={25}
-                                color='#F0700A'
+                                color='#5BAD25'
                             />
                         }
                         title="Entrar"
@@ -120,13 +130,23 @@ class Login extends Component {
                         type='clear'
                     />
                 </View>
-                <View style={styles.BackImageTwo}>
-                    <Image
-                        source={ResourceOne}
-                        style={{ width: width, height: height, alignSelf: 'center' }}
+                <View style={styles.Register}>
+                    <Text style={styles.Text}>
+                        ¿No tienes una cuenta?
+                    </Text>
+                    <Button
+                        icon={
+                            <Icon
+                                name='connectdevelop'
+                                size={25}
+                                color='#5BAD25'
+                            />
+                        }
+                        title='Regístrate'
+                        onPress={this.gotoRegister.bind(this)}
+                        type='clear'
                     />
                 </View>
-
                 <Toast
                     ref="toast"
                     style={{ backgroundColor: 'transparent' }}
@@ -165,13 +185,22 @@ const styles = StyleSheet.create({
     Button: {
         flex: 0.5,
         paddingTop: 30,
+        justifyContent: 'flex-end'
     },
     BackImageOne: {
-        flex: 1,
+        flex: 0.5,
     },
-    BackImageTwo: {
+    Card: {
         flex: 1,
-    }
+        justifyContent: 'center',
+    },
+    Register: {
+        alignItems: 'center',
+        flex: 0.5
+    },
+    Text: {
+        fontSize: 20
+    },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

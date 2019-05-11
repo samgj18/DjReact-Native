@@ -213,6 +213,7 @@ class Ble extends Component {
                     coilTwoData = res[1]
                     userVoltageData = res[2]
                     let btInfo = {
+                      "user": `${this.props.id}`,
                       "voltage_coil_1": `${coilOneData}`,
                       "voltage_coil_2": `${coilTwoData}`,
                       "voltage_generated_by_user": `${userVoltageData}`,
@@ -350,7 +351,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    token: state.auth.token
+    token: state.auth.token,
+    id: state.auth.id,
   }
 }
 
