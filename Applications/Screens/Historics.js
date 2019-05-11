@@ -9,7 +9,7 @@ import { Icon } from 'react-native-elements'
 import { StackedAreaChart, YAxis } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
-import { fetchDataFromServer } from '../BleModule/BleUtils'
+import { fetchDataFromServerBatery } from '../BleModule/BleUtils'
 
 class Historics extends Component {
     constructor(props) {
@@ -71,7 +71,7 @@ class Historics extends Component {
     }
 
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
-        const response = await fetchDataFromServer('5754db9208cf223a2a40220b1a6fb65d419fd437',
+        const response = await fetchDataFromServerBatery('5754db9208cf223a2a40220b1a6fb65d419fd437',
             `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
         this.setState({
             data: response
@@ -87,7 +87,7 @@ class Historics extends Component {
 
 
 
-        const colors = ['rgba(38, 222, 129,1.0)', 'rgba(38, 222, 129,0.6)',]
+        const colors = ['#1C1612', '#CFFCFF',]
         const keys = ['voltageCoilOne', 'voltageCoilTwo',]
         const svgs = [
             { onPress: () => this.refs.toast.show('Voltaje bobina 1', DURATION.LENGTH_SHORT) },
