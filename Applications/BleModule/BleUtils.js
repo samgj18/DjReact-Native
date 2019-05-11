@@ -10,7 +10,7 @@ export const sendDataToServer = async (token, data) => {
       },
       body: data
     }
-    const URL = 'http://72.14.177.247/voltages/alldata/'
+    const URL = 'http://72.14.177.247/voltages/test-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
     console.log(serverResponse)
@@ -22,6 +22,28 @@ export const sendDataToServer = async (token, data) => {
 
 
 export const fetchDataFromServer = async (token, url) => {
+  try {
+    let config = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token' + ' ' + token,
+        'Content-Type': 'application/json',
+      },
+    }
+    const URL = url
+    const response = await fetch(URL, config)
+    const serverResponse = await response.json()
+    const data = serverResponse.map(row => ({
+      voltageCoilOne: row.voltage_coil_1,
+      voltageCoilTwo: row.voltage_coil_2
+    }))
+    return (data)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const fetchDataFromServerBatery = async (token, url) => {
   try {
     let config = {
       method: 'GET',
