@@ -14,7 +14,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Dashboard',
       tabBarLabel: 'Dashboard',
-      tabBarIcon: <Icon size={24} color="white" name="tv" />
+      tabBarIcon: <Icon size={24} color="#EAF7CF" name="tv" />
     }
   },
   Settings: {
@@ -22,7 +22,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Settings',
       tabBarLabel: 'Settings',
-      tabBarIcon: <Icon size={24} color="white" name="settings" />
+      tabBarIcon: <Icon size={24} color="#EAF7CF" name="settings" />
     }
   },
   Historics: {
@@ -30,7 +30,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Historics',
       tabBarLabel: 'Historics',
-      tabBarIcon: <Icon size={24} color="white" name="history" />
+      tabBarIcon: <Icon size={24} color="#EAF7CF" name="history" />
     }
   },
   Batery: {
@@ -38,14 +38,14 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Battery',
       tabBarLabel: 'Battery',
-      tabBarIcon: <Icon size={24} color="white" name="battery-full" />
+      tabBarIcon: <Icon size={24} color="#EAF7CF" name="battery-full" />
     }
   }
 }, {
     initialRouteName: 'Dashboard',
-    activeColor: '#ecf0f1',
-    inactiveColor: '#dff9fb',
-    barStyle: { backgroundColor: '#F0700A' },
+    activeColor: '#FFF',
+    inactiveColor: '#C19AB7',
+    barStyle: { backgroundColor: '#C19AB7' },
     navigationOptions: ({ navigation }) => {
       const { routeName } = navigation.state.routes[navigation.state.index]
       return {

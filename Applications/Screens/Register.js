@@ -3,7 +3,6 @@ import { Card, Button, Text, Image } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import t from 'tcomb-form-native'
-import { NavigationActions } from 'react-navigation'
 import { StyleSheet, View, ScrollView } from 'react-native'
 import { connect } from 'react-redux';
 import FormValidation from '../Utils/Validation'
@@ -71,12 +70,7 @@ class Register extends Component {
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
     static navigationOptions = { title: '🇨🇴' };
 
-    gotoLogin = () => {
-        const navigateAction = NavigationActions.navigate({
-            routeName: 'Login'
-        })
-        this.props.navigation.dispatch(navigateAction)
-    }
+
 
     register() {
         this.props.onAuth(this.validate.name, this.validate.email, this.validate.password, this.validate.password);
@@ -106,7 +100,7 @@ class Register extends Component {
             <ScrollView style={styles.MainContainer}>
                 <Image
                     source={ResourceTwo}
-                    style={{ width: 60, height: 60, alignSelf: 'center' }}
+                    style={{ width: 60, height: 60, alignSelf: 'center', marginTop: 30 }}
                 />
                 <Card
                     wrapperStyle={{ paddingLeft: 10 }}
@@ -130,28 +124,11 @@ class Register extends Component {
                             <Icon
                                 name='connectdevelop'
                                 size={25}
-                                color='#F0700A'
+                                color='#5BAD25'
                             />
                         }
                         title='Regístrame'
                         onPress={this.register.bind(this)}
-                        type='clear'
-                    />
-                </View>
-                <View style={styles.Login}>
-                    <Text style={styles.Text}>
-                        ¿Ya tienes una cuenta?
-                    </Text>
-                    <Button
-                        icon={
-                            <Icon
-                                name='sign-in'
-                                size={25}
-                                color='#F0700A'
-                            />
-                        }
-                        title='Inicia Sesión'
-                        onPress={this.gotoLogin.bind(this)}
                         type='clear'
                     />
                 </View>
@@ -191,13 +168,6 @@ const styles = StyleSheet.create({
     },
     Button: {
         paddingTop: 10
-    },
-    Login: {
-        paddingTop: 10,
-        alignItems: 'center'
-    },
-    Text: {
-        fontSize: 20
     },
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Register)

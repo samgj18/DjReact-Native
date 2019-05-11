@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, ImageBackground, Image } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 import { Text, View } from 'react-native-animatable'
-import Seed from '../Assets/Images/Icon1.png'
-import Sketch from '../Assets/Images/Icon2.png'
+import Sketch from '../Assets/Images/BackgroundIcon.png'
 
 
 
@@ -11,7 +10,7 @@ export default class Landing extends Component {
 
     gotoRegister = () => {
         const navigateAction = NavigationActions.navigate({
-            routeName: 'Register'
+            routeName: 'Login'
         })
         this.props.navigation.dispatch(navigateAction)
     }
@@ -21,8 +20,9 @@ export default class Landing extends Component {
         return (
             <View style={styles.MainContainer}>
                 <View style={styles.BoxOne}
-                animation='pulse' 
-                delay={3000}
+                    animation='pulse'
+                    delay={3000}
+                    iterationCount='infinite'
                 >
                     <Image
                         style={{ width: 200, height: 180 }}
@@ -30,17 +30,14 @@ export default class Landing extends Component {
                     />
                 </View>
                 <View style={styles.BoxTwo}>
-                    <ImageBackground
-                        style={styles.BackImage}
-                        source={Seed}
-                    >
-                        <Text
-                            animation='pulse' 
-                            delay={3000}
-                            style={[styles.Title]}
-                            onPress={this.gotoRegister.bind(this)}
-                        >¡Iniciemos!</Text>
-                    </ImageBackground>
+
+                    <Text
+                        animation='pulse'
+                        delay={3000}
+                        style={[styles.Title]}
+                        onPress={this.gotoRegister.bind(this)}
+                    >¡Iniciemos!</Text>
+
                 </View>
 
             </View>
@@ -52,25 +49,22 @@ export default class Landing extends Component {
 const styles = StyleSheet.create({
     MainContainer: {
         flex: 1,
+        backgroundColor: '#CFFCFF'
     },
     BoxOne: {
         flex: 1,
         paddingTop: 60,
         alignItems: 'center',
+        justifyContent: 'flex-end'
     },
     BoxTwo: {
-        flex: 3,
-        position: 'relative'
+        flex: 1,
+        justifyContent: 'center'
     },
     Title: {
         fontSize: 25,
-        color: 'white',
         textAlign: 'center',
-        paddingBottom: 30
+        paddingBottom: 30,
+        color: '#1C1612',
     },
-    BackImage: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'flex-end'
-    }
 })
