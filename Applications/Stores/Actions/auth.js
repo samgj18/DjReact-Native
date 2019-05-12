@@ -1,6 +1,14 @@
 import * as actionTypes from './actionTypes';
 import AsyncStorage from "@react-native-community/async-storage";
 
+
+export const activityMade = (activity) => {
+    return {
+        type: actionTypes.ACTIVITY_RECOGNITION,
+        activity: activity,
+    }
+}
+
 export const authStart = () => {
     return {
         type: actionTypes.AUTH_START
@@ -134,7 +142,13 @@ export const authCheckState = () => {
 }
 
 
-
+export const activityClassifier = (coilOneData, coilTwoData, userVoltageData) => {
+    return dispatch => {
+        /*Here we have to get the model results, and return the values for setting the props
+        this is just a test function for testing purposes*/
+        dispatch(activityMade('Corriendo'))
+    }
+}
 
 const getIdAuth = async (username, password) => {
     let config = {

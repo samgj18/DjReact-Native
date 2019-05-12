@@ -10,15 +10,16 @@ import {
   PermissionsAndroid,
   Picker
 } from 'react-native'
-import { Text, CheckBox, Image } from 'react-native-elements'
+import { Text, CheckBox } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage'
 import NetInfo from "@react-native-community/netinfo";
 import { connect } from 'react-redux';
 import { Icon } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import BleManager from 'react-native-ble-manager'
-import { sendDataToServer, removeItemValue } from './BleUtils'
 
+import { sendDataToServer, removeItemValue, sendDataToServerTest } from './BleUtils'
+import * as actions from '../Stores/Actions/auth'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 const BleManagerModule = NativeModules.BleManager
@@ -44,8 +45,10 @@ const INITIAL_STATE = {
   dataDoubleVoltageCoilOne: '',
   dataDoubleVoltageCoilTwo: '',
   checked: false,
-  iconColor: 'red'
+  iconColor: 'red',
+  detectedActivity: ''
 }
+
 class Ble extends Component {
   constructor(props) {
     super(props)
@@ -59,7 +62,6 @@ class Ble extends Component {
       }],
     }
     this.dataFlag = false
-    this.datRows = []
     this.handleDiscoverPeripheral = this.handleDiscoverPeripheral.bind(this)
     this.handleDisconnectedPeripheral = this.handleDisconnectedPeripheral.bind(this)
   }
@@ -128,11 +130,13 @@ class Ble extends Component {
       this.setState({ peripherals })
     }
   }
+
   /*
   This portion of code, as its name indicates, handles what happens whenever a new device is discovered by the BT
   what it does is add a new element to the map object (peripherals), with the key (peripheral.id) and the value 
   (peripheral) specified allowing to update the peripherals found
   */
+
   handleDisconnectedPeripheral(data) {
     let peripherals = this.state.peripherals;
     let peripheral = peripherals.get(data.peripheral);
@@ -142,6 +146,7 @@ class Ble extends Component {
       this.setState({ peripherals });
     }
   }
+
   /*
   This portion of code, as its name indicates, handles what happens whenever a user wants to disconnect a device
   what it does is get the data from peripherals (array(key/value)) as it inherited the 'BleManagerDiscoverPeripheral'
@@ -221,13 +226,13 @@ class Ble extends Component {
                       "datetime": `${date}`,
                     }
                     if (this.dataFlag) {
-                      AsyncStorage.getItem('databaseTest').then((value) => {
+                      AsyncStorage.getItem('databaseTrain').then((value) => {
                         let existingData = JSON.parse(value)
                         if (!existingData) {
                           existingData = []
                         }
                         existingData.push(btInfo)
-                        AsyncStorage.setItem('databaseTest', JSON.stringify(existingData))
+                        AsyncStorage.setItem('databaseTrain', JSON.stringify(existingData))
                           .then(() => {
                             console.log(existingData)
                           })
@@ -284,6 +289,7 @@ class Ble extends Component {
             let coilOneData = []
             let coilTwoData = []
             let counterData = 0
+            let date = new Date().toISOString()
             /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
             characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
             reading of the data from the device of interest */
@@ -299,12 +305,14 @@ class Ble extends Component {
                     coilOneData = res[0]
                     coilTwoData = res[1]
                     userVoltageData = res[2]
+
+                    /*Here we have to get the model results, and return the values for setting the states*/
+
                     let btInfo = {
                       "user": `${this.props.id}`,
-                      "voltage_coil_1": `${coilOneData}`,
-                      "voltage_coil_2": `${coilTwoData}`,
-                      "voltage_generated_by_user": `${userVoltageData}`,
-                      "activity": `${this.state.pickerValue}`
+                      "detected_activity": `${this.state.detectedActivity}`,
+                      "real_activity": `${this.state.pickerValue}`,
+                      "datetime": `${date}`,
                     }
                     if (this.dataFlag) {
                       AsyncStorage.getItem('databaseTest').then((value) => {
@@ -321,7 +329,7 @@ class Ble extends Component {
                             console.log('There was an error saving the data')
                           })
                         if (counterData > 50) {
-                          sendDataToServer(this.props.token, value)
+                          sendDataToServerTest(this.props.token, value)
                           removeItemValue()
                           counterData = 0
                         }
@@ -357,6 +365,9 @@ class Ble extends Component {
     }
   }
 
+  testRedux = () => {
+    this.props.activityRecognition(1, 2, 3)
+  }
   render() {
     const list = Array.from(this.state.peripherals.values());
     const dataSource = ds.cloneWithRows(list);
@@ -377,6 +388,13 @@ class Ble extends Component {
             type='font-awesome'
             color={this.state.iconColor}
             onPress={this.scanForAPeriodOfTime.bind(this)}
+          />
+          <Icon
+            reverse
+            name='remove'
+            type='font-awesome'
+            color={this.state.iconColor}
+            onPress={this.testRedux.bind(this)}
           />
         </View>
         <View style={styles.boxTwo}>
@@ -453,6 +471,12 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapDispatchToProps = dispatch => {
+  return {
+    activityRecognition: (coilOneData, coilTwoData, userVoltageData) => dispatch(actions.activityClassifier(coilOneData, coilTwoData, userVoltageData))
+  }
+}
+
 const mapStateToProps = state => {
   return {
     token: state.auth.token,
@@ -460,6 +484,6 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, null)(Ble)
+export default connect(mapStateToProps, mapDispatchToProps)(Ble)
 
 
