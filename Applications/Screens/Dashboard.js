@@ -11,7 +11,6 @@ import * as actions from '../Stores/Actions/auth'
 
 
 
-
 class Dashboard extends Component {
   constructor(props) {
     super(props)
@@ -23,6 +22,28 @@ class Dashboard extends Component {
       email: email,
       articles: '',
       dropdown: true
+    }
+  }
+
+  async componentDidMount() {
+    try {
+      let config = {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+      const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
+      const response = await fetch(URL, config)
+      const responseJson = await response.json()
+      this.setState({
+        articles: responseJson.articles
+      }, () => {
+        this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
+      })
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -67,7 +88,7 @@ class Dashboard extends Component {
             <Text h4
               style={{ alignSelf: 'center' }}
             >Dashboard</Text>
-            <DashboardList />
+            <DashboardList articles={this.state.articles} />
             <View style={styles.UserLogout}>
               <Icon
                 reverse
@@ -132,4 +153,3 @@ const mapDispatchToProps = dispatch => {
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
-
