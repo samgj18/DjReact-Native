@@ -20,10 +20,33 @@ class Dashboard extends Component {
 
     this.state = {
       email: email,
+      articles: '',
       dropdown: true
     }
-    this.id = parseInt(this.props.id)
   }
+
+  async componentDidMount() {
+    try {
+      let config = {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+      const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
+      const response = await fetch(URL, config)
+      const responseJson = await response.json()
+      this.setState({
+        articles: responseJson.articles
+      }, () => {
+        this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   gotoDashboard() {
     this.props.navigation.navigate('Landing');
@@ -65,7 +88,7 @@ class Dashboard extends Component {
             <Text h4
               style={{ alignSelf: 'center' }}
             >Dashboard</Text>
-            <DashboardList />
+            <DashboardList articles={this.state.articles} />
             <View style={styles.UserLogout}>
               <Icon
                 reverse
@@ -121,7 +144,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     token: state.auth.token,
-    id: state.auth.id,
     loading: state.auth.loading
   }
 }
