@@ -58,7 +58,7 @@ class Login extends Component {
     and the options of the form we want to create. In this particular case, we want a login form with Email & Pass */
     static navigationOptions = { title: '🇨🇴' };
 
-    gotoUserScreen = () => {
+    gotoDashboard = () => {
         this.props.navigation.navigate('LandScreen', {
             email: this.state.user.email,
         });

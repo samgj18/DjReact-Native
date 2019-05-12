@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, ImageBackground, Image } from 'react-native'
+import { StyleSheet, Image } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 import { Text, View } from 'react-native-animatable'
 import Sketch from '../Assets/Images/BackgroundIcon.png'
@@ -30,7 +30,6 @@ export default class Landing extends Component {
                     />
                 </View>
                 <View style={styles.BoxTwo}>
-
                     <Text
                         animation='pulse'
                         delay={3000}

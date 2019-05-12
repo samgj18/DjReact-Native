@@ -6,11 +6,12 @@ import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
 import ModalDropdown from 'react-native-modal-dropdown';
 import PreLoader from '../Components/PreLoader'
+import DashboardList from '../Components/DashboardList'
 import * as actions from '../Stores/Actions/auth'
 
 
 
-class UserScreen extends Component {
+class Dashboard extends Component {
   constructor(props) {
     super(props)
 
@@ -24,7 +25,7 @@ class UserScreen extends Component {
     this.id = parseInt(this.props.id)
   }
 
-  gotoUserScreen() {
+  gotoDashboard() {
     this.props.navigation.navigate('Landing');
   }
 
@@ -47,7 +48,7 @@ class UserScreen extends Component {
     if (this.dropdownIdx == 0) {
       this.refs.toast.show('Cerrando sesión', DURATION.LENGTH_LONG);
       this.props.onAuth()
-      this.gotoUserScreen();
+      this.gotoDashboard();
     }
   }
 
@@ -64,6 +65,7 @@ class UserScreen extends Component {
             <Text h4
               style={{ alignSelf: 'center' }}
             >Dashboard</Text>
+            <DashboardList />
             <View style={styles.UserLogout}>
               <Icon
                 reverse
@@ -129,5 +131,5 @@ const mapDispatchToProps = dispatch => {
     onAuth: () => dispatch(actions.logout())
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
 

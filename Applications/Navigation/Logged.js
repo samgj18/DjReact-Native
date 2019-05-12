@@ -1,6 +1,6 @@
 import React from 'react'
 import Ble from '../BleModule/Ble'
-import UserScreen from '../Screens/UserScreen'
+import Dashboard from '../Screens/Dashboard'
 import Batery from '../Screens/Batery'
 import Historics from '../Screens/Historics'
 import { Icon } from 'react-native-elements'
@@ -10,7 +10,7 @@ import { createMaterialBottomTabNavigator } from "react-navigation-material-bott
 
 const DashboardTabNavigator = createMaterialBottomTabNavigator({
   Dashboard: {
-    screen: UserScreen,
+    screen: Dashboard,
     navigationOptions: {
       title: 'Dashboard',
       tabBarLabel: 'Dashboard',
