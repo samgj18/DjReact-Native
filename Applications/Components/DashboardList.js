@@ -66,7 +66,6 @@ export default class DashboardList extends Component {
             <View style={{ width, height, paddingLeft: 20 }}>
                 <FlatList
                     data={this.props.articles}
-                    extraData={this.props}
                     renderItem={this.renderItem}
                     keyExtractor={(item, index) => index.toString()}
                     refreshing='true'
