@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 import { connect } from 'react-redux';
 import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
@@ -83,7 +83,7 @@ class Dashboard extends Component {
       )
     } else {
       return (
-        <View style={styles.MainContainer}>
+        <ScrollView style={styles.MainContainer}>
           <View style={styles.UserHoover}>
             <Text h4
               style={{ alignSelf: 'center' }}
@@ -114,7 +114,7 @@ class Dashboard extends Component {
             opacity={0.8}
             textStyle={{ color: 'black' }}
           />
-        </View>
+        </ScrollView>
       )
     }
   }
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
 
   MainContainer: {
     flex: 1,
-    justifyContent: 'center',
     padding: 11
   },
   UserHoover: {
