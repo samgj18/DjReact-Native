@@ -25,28 +25,6 @@ class Dashboard extends Component {
     }
   }
 
-  async componentDidMount() {
-    try {
-      let config = {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-      const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
-      const response = await fetch(URL, config)
-      const responseJson = await response.json()
-      this.setState({
-        articles: responseJson.articles
-      }, () => {
-        this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
 
   gotoDashboard() {
     this.props.navigation.navigate('Landing');
@@ -88,7 +66,7 @@ class Dashboard extends Component {
             <Text h4
               style={{ alignSelf: 'center' }}
             >Dashboard</Text>
-            <DashboardList articles={this.state.articles} />
+            <DashboardList />
             <View style={styles.UserLogout}>
               <Icon
                 reverse

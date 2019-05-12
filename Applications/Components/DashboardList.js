@@ -27,7 +27,7 @@ export default class DashboardList extends Component {
             const response = await fetch(URL, config)
             const responseJson = await response.json()
             this.setState({
-                articles: [...articles, responseJson.articles]
+                articles: responseJson.articles
             }, () => {
                 console.log(this.state.articles)
             })
