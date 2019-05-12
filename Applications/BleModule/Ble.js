@@ -10,7 +10,7 @@ import {
   PermissionsAndroid,
   Picker
 } from 'react-native'
-import { Text, CheckBox } from 'react-native-elements'
+import { Text, CheckBox, Image } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage'
 import NetInfo from "@react-native-community/netinfo";
 import { connect } from 'react-redux';
@@ -22,7 +22,6 @@ import { sendDataToServer, removeItemValue } from './BleUtils'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 const BleManagerModule = NativeModules.BleManager
-const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 
 /*
@@ -31,6 +30,7 @@ Maybe you want to reuse some existing Objective-C, Swift or C++ code without hav
 or write some high performance. NativeModules will not expose any methods of BleManager to JavaScript unless explicitly
 told to, as we will further.
 */
+
 const BleManagerEmitter = new NativeEventEmitter(BleManagerModule)
 
 /* Subscribing events from BleManagerModule by creating a new NativeEventEmitter instance around this module, this
@@ -43,24 +43,20 @@ const INITIAL_STATE = {
   dataDoubleVoltage: '',
   dataDoubleVoltageCoilOne: '',
   dataDoubleVoltageCoilTwo: '',
-  checked: '',
+  checked: false,
   iconColor: 'red'
 }
 class Ble extends Component {
   constructor(props) {
     super(props)
-
-    const { navigation } = this.props;
-    const userID = navigation.getParam('userID')
     this.state = {
       ...INITIAL_STATE,
       userData: [{
-        id: userID,
+        id: this.props.id,
         voltage: '',
         coilOneData: '',
         coilTwoData: '',
       }],
-      userID: userID,
     }
     this.dataFlag = false
     this.datRows = []
@@ -152,6 +148,7 @@ class Ble extends Component {
   data is possible to get data.peripheral for retrieving the key and the value and setting the 'connected' attribute 
   to false managing to disconnect the device
   */
+
   scanForAPeriodOfTime = () => {
     this.dataFlag ? this.dataFlag = false : this.dataFlag = true
     this.dataFlag ? this.setState({ iconColor: 'green' }) : this.setState({ iconColor: 'red' })
@@ -175,11 +172,98 @@ class Ble extends Component {
       });
     }
   }
-  componentDidUpdate() {
-    console.log(this.state.checked)
-  }
+
 
   bleActionTraining = (peripheral) => {
+    if (peripheral) {
+      if (peripheral.connected) {
+        BleManager.disconnect(peripheral.id);
+      } else {
+        BleManager.connect(peripheral.id).then(() => {
+          let peripherals = this.state.peripherals;
+          let p = peripherals.get(peripheral.id);
+          if (p) {
+            p.connected = true;
+            peripherals.set(peripheral.id, p);
+            this.setState({ peripherals });
+          }
+          BleManager.retrieveServices(peripheral.id).then(() => {
+            const serviceUUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+            const characteristicUUID = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
+            let arrayDataChar = []
+            let userVoltageData = []
+            let coilOneData = []
+            let coilTwoData = []
+            let counterData = 0
+            let date = new Date().toISOString()
+            /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
+            characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
+            reading of the data from the device of interest */
+            BleManager.startNotification(peripheral.id, serviceUUID, characteristicUUID).then(() => {
+              BleManager.read(peripheral.id, serviceUUID, characteristicUUID)
+                .then(() => {
+                  return BleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', (data) => {
+                    arrayDataChar = data.value.map(value => {
+                      return String.fromCharCode(value)
+                    })
+                    arrayDataChar = arrayDataChar.join('')
+                    let res = arrayDataChar.split("#")
+                    coilOneData = res[0]
+                    coilTwoData = res[1]
+                    userVoltageData = res[2]
+
+                    let btInfo = {
+                      "user": `${this.props.id}`,
+                      "voltage_coil_1": `${coilOneData}`,
+                      "voltage_coil_2": `${coilTwoData}`,
+                      "voltage_generated_by_user": `${userVoltageData}`,
+                      "activity": `${this.state.pickerValue}`,
+                      "datetime": `${date}`,
+                    }
+                    if (this.dataFlag) {
+                      AsyncStorage.getItem('databaseTest').then((value) => {
+                        let existingData = JSON.parse(value)
+                        if (!existingData) {
+                          existingData = []
+                        }
+                        existingData.push(btInfo)
+                        AsyncStorage.setItem('databaseTest', JSON.stringify(existingData))
+                          .then(() => {
+                            console.log(existingData)
+                          })
+                          .catch(() => {
+                            console.log('There was an error saving the data')
+                          })
+                        if (counterData > 50) {
+                          sendDataToServer(this.props.token, value)
+                          removeItemValue()
+                          counterData = 0
+                        }
+                        counterData = counterData + 1
+                      })
+                        .catch((error) => {
+                          console.log(error)
+                        })
+                    } else {
+                      console.log('Habilte la bandera para enviar los datos')
+                    }
+                  })
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }).catch((error) => {
+              console.log(error);
+            });
+          });
+        }).catch((error) => {
+          console.log(error);
+        });
+      }
+    }
+  }
+
+  bleActionTesting = (peripheral) => {
     if (peripheral) {
       if (peripheral.connected) {
         BleManager.disconnect(peripheral.id);
@@ -265,6 +349,14 @@ class Ble extends Component {
     }
   }
 
+  handleActionFunction = (peripheral) => {
+    if (this.state.checked) {
+      this.bleActionTraining(peripheral)
+    } else {
+      this.bleActionTesting(peripheral)
+    }
+  }
+
   render() {
     const list = Array.from(this.state.peripherals.values());
     const dataSource = ds.cloneWithRows(list);
@@ -288,18 +380,21 @@ class Ble extends Component {
           />
         </View>
         <View style={styles.boxTwo}>
-          <Picker
-            selectedValue={this.state.pickerValue}
-            onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
-          >
-            <Picker.Item label='Seleccione una actividad' value='' />
-            <Picker.Item label='Caminar' value='1' />
-            <Picker.Item label='Saltar' value='2' />
-            <Picker.Item label='Correr' value='3' />
-            <Picker.Item label='Permancer quieto' value='4' />
-            <Picker.Item label='Subir o Bajar escaleras' value='5' />
-          </Picker>
+          {this.state.checked ? (
+            <Picker
+              selectedValue={this.state.pickerValue}
+              onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
+            >
+              <Picker.Item label='Seleccione una actividad' value='' />
+              <Picker.Item label='Caminar' value='1' />
+              <Picker.Item label='Saltar' value='2' />
+              <Picker.Item label='Correr' value='3' />
+              <Picker.Item label='Permancer quieto' value='4' />
+              <Picker.Item label='Subir o Bajar escaleras' value='5' />
+            </Picker>
+          ) : null}
           <CheckBox
+            title='Habilitar | Deshabilitar modo de entrenamiento'
             checkedIcon='dot-circle-o'
             uncheckedIcon='circle-o'
             checked={this.state.checked}
@@ -312,7 +407,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.bleActionTraining(item)}>
+              <TouchableHighlight onPress={() => this.handleActionFunction(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>

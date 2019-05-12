@@ -10,7 +10,7 @@ export const sendDataToServer = async (token, data) => {
       },
       body: data
     }
-    const URL = 'http://72.14.177.247/voltages/test-data/'
+    const URL = 'http://72.14.177.247/voltages/train-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
     console.log(serverResponse)
@@ -66,6 +66,18 @@ export const fetchDataFromServerBatery = async (token, url) => {
   }
 }
 
+export const calculateLifeExpansionBatery = (voltages) => {
+  let bateryLifeExtensionCounter = 0
+  voltages.map(voltage => {
+    const doubleVoltage = parseFloat(voltage)
+    if (doubleVoltage >= 3.290) {
+      bateryLifeExtensionCounter = bateryLifeExtensionCounter + 1
+    }
+  })
+  const bateryLifeExtension = 0.05 * bateryLifeExtensionCounter
+  return bateryLifeExtension
+}
+
 rowConverterVoltageUser = (data) => {
   voltageGeneratedByUser = []
   const headers = Object.keys(data[0])
@@ -91,6 +103,8 @@ rowConverterVoltageCoils = (data) => {
   }
   return [voltageCoilOne, voltageCoilTwo]
 }
+
+
 
 
 export const removeItemValue = async () => {

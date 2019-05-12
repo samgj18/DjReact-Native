@@ -9,7 +9,7 @@ import { Icon } from 'react-native-elements'
 import { AreaChart, XAxis, YAxis } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
-import { fetchDataFromServerBatery } from '../BleModule/BleUtils'
+import { fetchDataFromServerBatery, calculateLifeExpansionBatery } from '../BleModule/BleUtils'
 
 class Batery extends Component {
     constructor(props) {
@@ -20,6 +20,7 @@ class Batery extends Component {
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
             data: [],
+            bateryExtension: null,
         }
         this.counter = 0
     }
@@ -54,6 +55,7 @@ class Batery extends Component {
         }
     }
 
+
     handleDatePicked = (datetime) => {
         let curr_date = datetime.getDate();
         let curr_month = datetime.getMonth();
@@ -72,8 +74,10 @@ class Batery extends Component {
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
         const response = await fetchDataFromServerBatery(this.props.token,
             `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+        const bateryLifeExtension = calculateLifeExpansionBatery(response)
         this.setState({
-            data: response
+            data: response,
+            bateryExtension: bateryLifeExtension
         }, () => {
             if (this.state.data != []) {
                 this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
@@ -97,7 +101,9 @@ class Batery extends Component {
             return (
                 <View style={styles.MainContainer}>
                     <View style={styles.Historics}>
-                        <Text h4>Consulta uso de batería</Text>
+                        <Text h4
+                            style={{ textAlign: 'center' }}
+                        >Extensión vida útil de la batería</Text>
                         <Text> {this.state.header} </Text>
                         <Icon
                             reverse
@@ -136,7 +142,12 @@ class Batery extends Component {
                             svg={{ fontSize: 10, fill: 'grey' }}
                         />
                     </View>
+
                     <View style={styles.Consulta}>
+                        {this.state.bateryExtension ? (
+                            <Text style={{ alignSelf: 'center' }}>La extensión de la vida útil de
+                            la batería fue de {this.state.bateryExtension} segundos</Text>
+                        ) : null}
                         <Icon
                             reverse
                             name='send'

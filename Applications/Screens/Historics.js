@@ -114,7 +114,8 @@ class Historics extends Component {
                         />
                     </View>
                     <View style={styles.Charts}>
-                        <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ color: 'grey', alignSelf: 'center', paddingLeft: 5 }}>Bobina 1</Text>
+                        <View style={{ flexDirection: 'row', paddingLeft: 5 }}>
                             <YAxis
                                 data={voltageCoilOne}
                                 contentInset={{ top: 30, bottom: 30 }}
@@ -143,7 +144,7 @@ class Historics extends Component {
                         />
                     </View>
                     <View style={styles.Charts}>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', paddingLeft: 5 }}>
                             <YAxis
                                 data={voltageCoilTwo}
                                 contentInset={{ top: 30, bottom: 30 }}
@@ -171,6 +172,7 @@ class Historics extends Component {
                             svg={{ fontSize: 10, fill: 'grey' }}
                         />
                     </View>
+                    <Text style={{ color: 'grey', alignSelf: 'center', paddingLeft: 5 }}>Bobina 2</Text>
                     <View style={styles.Consulta}>
                         <Icon
                             reverse
