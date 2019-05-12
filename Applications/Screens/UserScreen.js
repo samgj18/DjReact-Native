@@ -61,14 +61,18 @@ class UserScreen extends Component {
       return (
         <View style={styles.MainContainer}>
           <View style={styles.UserHoover}>
-            <Text h4>Dashboard</Text>
-            <Icon
-              reverse
-              name='ellipsis-h'
-              type='font-awesome'
-              color='black'
-              onPress={dropdownShowOrHide}
-            />
+            <Text h4
+              style={{ alignSelf: 'center' }}
+            >Dashboard</Text>
+            <View style={styles.UserLogout}>
+              <Icon
+                reverse
+                name='ellipsis-h'
+                type='font-awesome'
+                color='black'
+                onPress={dropdownShowOrHide}
+              />
+            </View>
             <ModalDropdown ref={el => this.dropdown = el}
               defaultValue=''
               options={['Cerrar sesión']}
@@ -103,8 +107,12 @@ const styles = StyleSheet.create({
   },
   UserHoover: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingTop: 50
+  },
+  UserLogout: {
+    flex: 1,
+    justifyContent: 'flex-end'
   }
 });
 

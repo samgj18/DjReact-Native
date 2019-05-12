@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     Button: {
         flex: 0.5,
         paddingTop: 30,
-        justifyContent: 'flex-end'
+        justifyContent: 'center'
     },
     BackImageOne: {
         flex: 0.5,

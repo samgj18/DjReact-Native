@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Button } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 import { Text } from 'react-native-elements'
 import { connect } from 'react-redux';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import PreLoader from '../Components/PreLoader'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import { Icon } from 'react-native-elements'
-import { StackedAreaChart, YAxis } from 'react-native-svg-charts'
+import { AreaChart, XAxis, YAxis } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
-import { fetchDataFromServerBatery } from '../BleModule/BleUtils'
+import { fetchDataFromServer } from '../BleModule/BleUtils'
 
 class Historics extends Component {
     constructor(props) {
@@ -20,7 +20,8 @@ class Historics extends Component {
             initialDatePicked: '',
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
-            data: [{}]
+            voltageCoilOne: [],
+            voltageCoilTwo: [],
         }
         this.counter = 0
     }
@@ -71,12 +72,21 @@ class Historics extends Component {
     }
 
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
-        const response = await fetchDataFromServerBatery('5754db9208cf223a2a40220b1a6fb65d419fd437',
-            `http://127.0.0.1:8000/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+        const response = await fetchDataFromServer(this.props.token,
+            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+        console.log(response[0])
         this.setState({
-            data: response
+            voltageCoilOne: response[0]
         }, () => {
-            this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
+            this.setState({
+                voltageCoilTwo: response[1]
+            }, () => {
+                if (this.state.voltageCoilOne == [] || this.state.voltageCoilTwo == []) {
+                    this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
+                } else {
+                    this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
+                }
+            })
         })
     }
 
@@ -84,17 +94,7 @@ class Historics extends Component {
 
 
     render() {
-
-
-
-        const colors = ['#1C1612', '#CFFCFF',]
-        const keys = ['voltageCoilOne', 'voltageCoilTwo',]
-        const svgs = [
-            { onPress: () => this.refs.toast.show('Voltaje bobina 1', DURATION.LENGTH_SHORT) },
-            { onPress: () => this.refs.toast.show('Voltaje bobina 2', DURATION.LENGTH_SHORT) },
-        ]
-
-        const { initialDatePicked, endDatePicked } = this.state
+        const { initialDatePicked, endDatePicked, voltageCoilOne, voltageCoilTwo } = this.state
         if (this.props.loading) {
             return (
                 <PreLoader />
@@ -109,29 +109,66 @@ class Historics extends Component {
                             reverse
                             name='calendar'
                             type='font-awesome'
-                            color='black'
+                            color='#1C1612'
                             onPress={this.showDateTimePicker}
                         />
                     </View>
                     <View style={styles.Charts}>
-                        <YAxis
-                            data={[1, 2]}
-                            contentInset={{ top: 20, bottom: 20 }}
-                            svg={{
-                                fill: 'grey',
-                                fontSize: 10,
-                            }}
-                            numberOfTicks={1}
-                            formatLabel={value => `${value} Bobina `}
+                        <View style={{ flexDirection: 'row' }}>
+                            <YAxis
+                                data={voltageCoilOne}
+                                contentInset={{ top: 30, bottom: 30 }}
+                                svg={{
+                                    fill: 'grey',
+                                    fontSize: 8,
+                                }}
+                                numberOfTicks={voltageCoilOne.length}
+                                formatLabel={value => `${value}V`}
+                            />
+                            <AreaChart
+                                style={{ height: 150, flex: 1 }}
+                                data={voltageCoilOne}
+                                contentInset={{ top: 30, bottom: 30 }}
+                                curve={shape.curveNatural}
+                                svg={{ fill: '#CFFCFF' }}
+                            >
+                            </AreaChart>
+                        </View>
+                        <XAxis
+                            style={{ marginHorizontal: -10 }}
+                            data={voltageCoilOne}
+                            formatLabel={(value, index) => index}
+                            contentInset={{ left: 30, right: 30 }}
+                            svg={{ fontSize: 10, fill: 'grey' }}
                         />
-                        <StackedAreaChart
-                            style={{ height: 230, paddingVertical: 16, flex: 1 }}
-                            data={this.state.data}
-                            keys={keys}
-                            colors={colors}
-                            curve={shape.curveNatural}
-                            showGrid={true}
-                            svgs={svgs}
+                    </View>
+                    <View style={styles.Charts}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <YAxis
+                                data={voltageCoilTwo}
+                                contentInset={{ top: 30, bottom: 30 }}
+                                svg={{
+                                    fill: 'grey',
+                                    fontSize: 8,
+                                }}
+                                numberOfTicks={voltageCoilTwo.length}
+                                formatLabel={value => `${value}V`}
+                            />
+                            <AreaChart
+                                style={{ height: 150, flex: 1 }}
+                                data={voltageCoilTwo}
+                                contentInset={{ top: 30, bottom: 30 }}
+                                curve={shape.curveNatural}
+                                svg={{ fill: '#1C1612' }}
+                            >
+                            </AreaChart>
+                        </View>
+                        <XAxis
+                            style={{ marginHorizontal: -10 }}
+                            data={voltageCoilTwo}
+                            formatLabel={(value, index) => index}
+                            contentInset={{ left: 30, right: 30 }}
+                            svg={{ fontSize: 10, fill: 'grey' }}
                         />
                     </View>
                     <View style={styles.Consulta}>
@@ -139,7 +176,7 @@ class Historics extends Component {
                             reverse
                             name='send'
                             type='font-awesome'
-                            color='black'
+                            color='#1C1612'
                             onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
                     </View>
 
@@ -170,8 +207,6 @@ const styles = StyleSheet.create({
 
     MainContainer: {
         flex: 1,
-        justifyContent: 'center',
-        padding: 11
     },
     Historics: {
         flex: 1,
@@ -185,7 +220,6 @@ const styles = StyleSheet.create({
     },
     Charts: {
         flex: 1,
-        flexDirection: 'row'
     }
 });
 

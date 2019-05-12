@@ -37,7 +37,8 @@ export const fetchDataFromServer = async (token, url) => {
       voltageCoilOne: row.voltage_coil_1,
       voltageCoilTwo: row.voltage_coil_2
     }))
-    return (data)
+    const rowVoltageData = rowConverterVoltageCoils(data)
+    return (rowVoltageData)
   } catch (error) {
     console.log(error)
   }
@@ -56,15 +57,40 @@ export const fetchDataFromServerBatery = async (token, url) => {
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
     const data = serverResponse.map(row => ({
-      voltageCoilOne: row.voltage_coil_1,
-      voltageCoilTwo: row.voltage_coil_2
+      voltageGeneratedByUser: row.voltage_generated_by_user,
     }))
-    return (data)
+    const rowVoltageData = rowConverterVoltageUser(data)
+    return (rowVoltageData)
   } catch (error) {
     console.log(error)
   }
 }
 
+rowConverterVoltageUser = (data) => {
+  voltageGeneratedByUser = []
+  const headers = Object.keys(data[0])
+  for (const row of data) {
+    headers.map(header => {
+      voltageGeneratedByUser.push(parseInt(row[header]))
+      return row[header]
+    })
+  }
+  return (voltageGeneratedByUser)
+}
+
+rowConverterVoltageCoils = (data) => {
+  voltageCoilOne = []
+  voltageCoilTwo = []
+  const headers = Object.keys(data[0])
+  for (const row of data) {
+    const values = headers.map(header => {
+      return row[header]
+    })
+    voltageCoilOne.push(parseInt(values[0]))
+    voltageCoilTwo.push(parseInt(values[1]))
+  }
+  return [voltageCoilOne, voltageCoilTwo]
+}
 
 
 export const removeItemValue = async () => {

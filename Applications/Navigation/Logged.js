@@ -14,7 +14,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Dashboard',
       tabBarLabel: 'Dashboard',
-      tabBarIcon: <Icon size={24} color="#EAF7CF" name="tv" />
+      tabBarIcon: <Icon size={24} color="white" name="tv" />
     }
   },
   Settings: {
@@ -22,7 +22,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Settings',
       tabBarLabel: 'Settings',
-      tabBarIcon: <Icon size={24} color="#EAF7CF" name="settings" />
+      tabBarIcon: <Icon size={24} color="white" name="settings" />
     }
   },
   Historics: {
@@ -30,7 +30,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Historics',
       tabBarLabel: 'Historics',
-      tabBarIcon: <Icon size={24} color="#EAF7CF" name="history" />
+      tabBarIcon: <Icon size={24} color="white" name="history" />
     }
   },
   Batery: {
@@ -38,7 +38,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Battery',
       tabBarLabel: 'Battery',
-      tabBarIcon: <Icon size={24} color="#EAF7CF" name="battery-full" />
+      tabBarIcon: <Icon size={24} color="white" name="battery-full" />
     }
   }
 }, {
