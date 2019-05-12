@@ -10,7 +10,7 @@ import {
   PermissionsAndroid,
   Picker
 } from 'react-native'
-import { Text } from 'react-native-elements'
+import { Text, CheckBox } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage'
 import NetInfo from "@react-native-community/netinfo";
 import { connect } from 'react-redux';
@@ -43,6 +43,7 @@ const INITIAL_STATE = {
   dataDoubleVoltage: '',
   dataDoubleVoltageCoilOne: '',
   dataDoubleVoltageCoilTwo: '',
+  checked: '',
   iconColor: 'red'
 }
 class Ble extends Component {
@@ -174,9 +175,11 @@ class Ble extends Component {
       });
     }
   }
+  componentDidUpdate() {
+    console.log(this.state.checked)
+  }
 
-
-  bleAction = (peripheral) => {
+  bleActionTraining = (peripheral) => {
     if (peripheral) {
       if (peripheral.connected) {
         BleManager.disconnect(peripheral.id);
@@ -296,6 +299,12 @@ class Ble extends Component {
             <Picker.Item label='Permancer quieto' value='4' />
             <Picker.Item label='Subir o Bajar escaleras' value='5' />
           </Picker>
+          <CheckBox
+            checkedIcon='dot-circle-o'
+            uncheckedIcon='circle-o'
+            checked={this.state.checked}
+            onPress={() => this.setState({ checked: !this.state.checked })}
+          />
         </View>
         <ListView
           enableEmptySections={true}
@@ -303,7 +312,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.bleAction(item)}>
+              <TouchableHighlight onPress={() => this.bleActionTraining(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>
