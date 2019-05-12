@@ -41,6 +41,7 @@ class Dashboard extends Component {
         articles: responseJson.articles
       }, () => {
         this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
+        console.log(this.props.id)
       })
     } catch (error) {
       console.log(error)
@@ -83,26 +84,24 @@ class Dashboard extends Component {
       )
     } else {
       return (
-        <ScrollView style={styles.MainContainer}>
+        <View style={styles.MainContainer}>
           <View style={styles.UserHoover}>
             <Text h4
               style={{ alignSelf: 'center' }}
-            >Dashboard</Text>
-            <DashboardList articles={this.state.articles} />
-            <View style={styles.UserLogout}>
-              <Icon
-                reverse
-                name='ellipsis-h'
-                type='font-awesome'
-                color='black'
-                onPress={dropdownShowOrHide}
-              />
-            </View>
+            >Dashboard {this.props.id}</Text>
+            <Icon
+              reverse
+              name='ellipsis-h'
+              type='font-awesome'
+              color='black'
+              onPress={dropdownShowOrHide}
+            />
             <ModalDropdown ref={el => this.dropdown = el}
               defaultValue=''
               options={['Cerrar sesión']}
               onSelect={this.dropdownOnSelect.bind(this)}
             />
+            <DashboardList style={{ paddingTop: 20 }} articles={this.state.articles} />
           </View>
           <Toast
             ref="toast"
@@ -114,7 +113,7 @@ class Dashboard extends Component {
             opacity={0.8}
             textStyle={{ color: 'black' }}
           />
-        </ScrollView>
+        </View>
       )
     }
   }
@@ -143,7 +142,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     token: state.auth.token,
-    loading: state.auth.loading
+    loading: state.auth.loading,
+    id: state.auth.id
   }
 }
 

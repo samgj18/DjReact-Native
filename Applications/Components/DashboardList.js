@@ -10,29 +10,7 @@ export default class DashboardList extends Component {
         super(props)
 
         this.state = {
-            articles: []
-        }
-    }
 
-    async componentDidMount() {
-        try {
-            let config = {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            }
-            const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=technology&apiKey=0a4c95a16be648e8be07e265bbc31af2'
-            const response = await fetch(URL, config)
-            const responseJson = await response.json()
-            this.setState({
-                articles: [...articles, responseJson.articles]
-            }, () => {
-                console.log(this.state.articles)
-            })
-        } catch (error) {
-            console.log(error)
         }
     }
 
