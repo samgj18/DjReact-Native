@@ -306,7 +306,7 @@ class Ble extends Component {
                     coilTwoData = res[1]
                     userVoltageData = res[2]
 
-                    /*Here we have to get the model results, and return the values for setting the states*/
+                    this.props.activityRecognition(coilOneData, coilTwoData, userVoltageData)
 
                     let btInfo = {
                       "user": `${this.props.id}`,
@@ -365,9 +365,7 @@ class Ble extends Component {
     }
   }
 
-  testRedux = () => {
-    this.props.activityRecognition(1, 2, 3)
-  }
+
   render() {
     const list = Array.from(this.state.peripherals.values());
     const dataSource = ds.cloneWithRows(list);
@@ -388,13 +386,6 @@ class Ble extends Component {
             type='font-awesome'
             color={this.state.iconColor}
             onPress={this.scanForAPeriodOfTime.bind(this)}
-          />
-          <Icon
-            reverse
-            name='remove'
-            type='font-awesome'
-            color={this.state.iconColor}
-            onPress={this.testRedux.bind(this)}
           />
         </View>
         <View style={styles.boxTwo}>

@@ -3,6 +3,7 @@ import Ble from '../BleModule/Ble'
 import Dashboard from '../Screens/Dashboard'
 import Batery from '../Screens/Batery'
 import Historics from '../Screens/Historics'
+import UserProfile from '../Screens/UserProfile'
 import { Icon } from 'react-native-elements'
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
@@ -39,6 +40,14 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
       title: 'Battery',
       tabBarLabel: 'Battery',
       tabBarIcon: <Icon size={24} color="white" name="battery-full" />
+    }
+  },
+  UserProfile: {
+    screen: UserProfile,
+    navigationOptions: {
+      title: 'Profile',
+      tabBarLabel: 'Profile',
+      tabBarIcon: <Icon size={24} color="white" name="person-outline" />
     }
   }
 }, {

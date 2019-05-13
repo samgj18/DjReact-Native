@@ -41,7 +41,7 @@ const authLogout = (state, action) => {
 
 const activityRecognition = (state, action) => {
     return updateObject(state, {
-        activity: action.state
+        activity: action.activity
     })
 }
 
