@@ -5,6 +5,10 @@ import { RandomForestClassifier } from '../../MachineLearning/HARKE-RF'
 import * as math from 'mathjs'
 
 const prediction = new RandomForestClassifier()
+let auxCounter = 0
+let voltagesX = []
+let voltagesY = []
+let activity = null
 
 export const activityMade = (activity) => {
     return {
@@ -168,17 +172,13 @@ export const featuresList = (voltagesX, voltagesY) => {
     return [meanX, meanY, stdX, stdY, varX, varY, madX, madY, dom, rangeX, rangeY, medianX, medianY, rmsX, rmsY]
 }
 
-let auxCounter = 0
 export const activityClassifier = (coilOneData, coilTwoData) => {
     return dispatch => {
-        let voltagesX = []
-        let voltagesY = []
-        let activity = null
         voltagesX.push(coilOneData)
         voltagesY.push(coilTwoData)
         auxCounter = auxCounter + 1
         if (auxCounter == 20) {
-            activity = featuresList(voltagesX, voltagesY)
+            activity = prediction(featuresList(voltagesX, voltagesY))
             if (activity == 0) {
                 activity = 'Saltar'
             } else if (activity == 1) {
