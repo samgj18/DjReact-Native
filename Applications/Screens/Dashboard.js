@@ -1,27 +1,12 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { connect } from 'react-redux';
 import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
-import { Icon } from 'react-native-elements'
-import ModalDropdown from 'react-native-modal-dropdown';
 import PreLoader from '../Components/PreLoader'
-import DashboardList from '../Components/DashboardList'
-import * as actions from '../Stores/Actions/auth'
-
 
 
 class Dashboard extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-
-    }
-  }
-
-
-
 
   render() {
     if (this.props.loading) {

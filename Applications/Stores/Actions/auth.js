@@ -1,6 +1,10 @@
+
 import * as actionTypes from './actionTypes';
 import AsyncStorage from "@react-native-community/async-storage";
+import { RandomForestClassifier } from '../../MachineLearning/HARKE-RF'
+import * as math from 'mathjs'
 
+const prediction = new RandomForestClassifier()
 
 export const activityMade = (activity) => {
     return {
@@ -142,11 +146,52 @@ export const authCheckState = () => {
 }
 
 
-export const activityClassifier = (coilOneData, coilTwoData, userVoltageData) => {
+export const featuresList = (voltagesX, voltagesY) => {
+    let meanX = math.mean(voltagesX)
+    let meanY = math.mean(voltagesY)
+    let stdX = math.std(voltagesX)
+    let stdY = math.std(voltagesY)
+    let varX = math.var(voltagesX)
+    let varY = math.var(voltagesY)
+    let madX = math.mad(voltagesX)
+    let madY = math.mad(voltagesY)
+    let dom = meanX - meanY
+    let maxX = math.max(voltagesX)
+    let maxY = math.max(voltagesY)
+    let rangeX = maxX - math.min(voltagesX)
+    let rangeY = maxY - math.min(voltagesY)
+    let medianX = math.median(voltagesX)
+    let medianY = math.median(voltagesY)
+    let rmsX = math.sqrt(math.mean(math.pow(voltagesX, 2)))
+    let rmsY = math.sqrt(math.mean(math.pow(voltagesY, 2)))
+
+    return [meanX, meanY, stdX, stdY, varX, varY, madX, madY, dom, rangeX, rangeY, medianX, medianY, rmsX, rmsY]
+}
+
+let auxCounter = 0
+export const activityClassifier = (coilOneData, coilTwoData) => {
     return dispatch => {
-        /*Here we have to get the model results, and return the values for setting the props
-        this is just a test function for testing purposes*/
-        dispatch(activityMade('Corriendo'))
+        let voltagesX = []
+        let voltagesY = []
+        let activity = null
+        voltagesX.push(coilOneData)
+        voltagesY.push(coilTwoData)
+        auxCounter = auxCounter + 1
+        if (auxCounter == 20) {
+            activity = featuresList(voltagesX, voltagesY)
+            if (activity == 0) {
+                activity = 'Saltar'
+            } else if (activity == 1) {
+                activity = 'Correr'
+            } else if (activity == 2) {
+                activity = 'Estar quieto '
+            } else {
+                activity = 'Escaleras'
+            }
+            voltagesX = []
+            voltagesY = []
+        }
+        dispatch(activityMade(activity))
     }
 }
 

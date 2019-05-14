@@ -200,7 +200,6 @@ class Ble extends Component {
             let coilOneData = []
             let coilTwoData = []
             let counterData = 0
-            let date = new Date().toISOString()
             /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
             characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
             reading of the data from the device of interest */
@@ -222,8 +221,7 @@ class Ble extends Component {
                       "voltage_coil_1": `${coilOneData}`,
                       "voltage_coil_2": `${coilTwoData}`,
                       "voltage_generated_by_user": `${userVoltageData}`,
-                      "activity": `${this.state.pickerValue}`,
-                      "datetime": `${date}`,
+                      "activity": `${this.state.pickerValue}`
                     }
                     if (this.dataFlag) {
                       AsyncStorage.getItem('databaseTrain').then((value) => {
@@ -239,7 +237,7 @@ class Ble extends Component {
                           .catch(() => {
                             console.log('There was an error saving the data')
                           })
-                        if (counterData > 50) {
+                        if (counterData > 20) {
                           sendDataToServer(this.props.token, value)
                           removeItemValue()
                           counterData = 0
@@ -306,7 +304,7 @@ class Ble extends Component {
                     coilTwoData = res[1]
                     userVoltageData = res[2]
 
-                    this.props.activityRecognition(coilOneData, coilTwoData, userVoltageData)
+                    this.props.activityRecognition(coilOneData, coilTwoData)
 
                     let btInfo = {
                       "user": `${this.props.id}`,
@@ -416,7 +414,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.handleActionFunction(item)}>
+              <TouchableHighlight onPress={() => this.bleActionTesting(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>
