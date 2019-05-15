@@ -51,7 +51,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     }
   }
 }, {
-    initialRouteName: 'Dashboard',
+    initialRouteName: 'UserProfile',
     activeColor: '#FFF',
     inactiveColor: '#C19AB7',
     barStyle: { backgroundColor: '#C19AB7' },
