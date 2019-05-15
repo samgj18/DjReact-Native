@@ -10,43 +10,24 @@ class Dashboard extends Component {
     super(props)
 
     this.state = {
-      activity: ''
+
     }
-  }
-
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.activity == 0) {
-      this.setState({
-        activity: 'Saltar'
-      }, () => {
-        console.log(this.state.activity)
-      })
-
-    } else if (this.props.activity == 1) {
-      this.setState({
-        activity: 'Correr'
-      }, () => {
-        console.log(this.state.activity)
-      })
-
-    } else if (this.props.activity == 2) {
-      this.setState({
-        activity: 'Estar quieto'
-      }, () => {
-        console.log(this.state.activity)
-      })
-
-    } else {
-      this.setState({
-        activity: 'Escaleras'
-      }, () => {
-        console.log(this.state.activity)
-      })
-    }
+    this.activity
   }
 
   render() {
+    let activity = ''
+
+    if (this.props.activity == 0) {
+      activity = 'Saltar'
+    } else if (this.props.activity == 1) {
+      activity = 'Correr'
+    } else if (this.props.activity == 2) {
+      activity = 'Estar quieto'
+    } else {
+      activity = 'Subir o bajar escaleras'
+    }
+
     if (this.props.loading) {
       return (
         <PreLoader />
@@ -61,7 +42,7 @@ class Dashboard extends Component {
             <Text
               style={{ alignSelf: 'flex-start', paddingTop: 30 }}
             >
-              La actividad que usted está realizando es: {this.state.activity}
+              La actividad que usted está realizando es: {activity}
             </Text>
           </View>
           <Toast
