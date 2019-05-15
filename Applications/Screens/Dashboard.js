@@ -5,8 +5,46 @@ import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import PreLoader from '../Components/PreLoader'
 
-
 class Dashboard extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activity: ''
+    }
+  }
+
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.activity == 0) {
+      this.setState({
+        activity: 'Saltar'
+      }, () => {
+        console.log(this.state.activity)
+      })
+
+    } else if (this.props.activity == 1) {
+      this.setState({
+        activity: 'Correr'
+      }, () => {
+        console.log(this.state.activity)
+      })
+
+    } else if (this.props.activity == 2) {
+      this.setState({
+        activity: 'Estar quieto'
+      }, () => {
+        console.log(this.state.activity)
+      })
+
+    } else {
+      this.setState({
+        activity: 'Escaleras'
+      }, () => {
+        console.log(this.state.activity)
+      })
+    }
+  }
 
   render() {
     if (this.props.loading) {
@@ -23,7 +61,7 @@ class Dashboard extends Component {
             <Text
               style={{ alignSelf: 'flex-start', paddingTop: 30 }}
             >
-              La actividad que usted está realizando es: {this.props.activity}
+              La actividad que usted está realizando es: {this.state.activity}
             </Text>
           </View>
           <Toast

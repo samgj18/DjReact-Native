@@ -183,15 +183,6 @@ export const activityClassifier = (coilOneData, coilTwoData) => {
         auxCounter = auxCounter + 1
         if (auxCounter > 20) {
             activity = RandomForest.predict((featuresList(voltagesX, voltagesY)))
-            if (activity == 0) {
-                activity = 'Saltar'
-            } else if (activity == 1) {
-                activity = 'Correr'
-            } else if (activity == 2) {
-                activity = 'Estar quieto '
-            } else {
-                activity = 'Escaleras'
-            }
             voltagesX = []
             voltagesY = []
             auxCounter = 0
