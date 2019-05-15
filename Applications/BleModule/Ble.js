@@ -305,10 +305,10 @@ class Ble extends Component {
                     userVoltageData = res[2]
 
                     this.props.activityRecognition(coilOneData, coilTwoData)
-
+                    console.log(this.props.activity)
                     let btInfo = {
                       "user": `${this.props.id}`,
-                      "detected_activity": `${this.state.detectedActivity}`,
+                      "detected_activity": `${this.props.activity}`,
                       "real_activity": `${this.state.pickerValue}`,
                       "datetime": `${date}`,
                     }
@@ -326,7 +326,7 @@ class Ble extends Component {
                           .catch(() => {
                             console.log('There was an error saving the data')
                           })
-                        if (counterData > 50) {
+                        if (counterData > 20) {
                           sendDataToServerTest(this.props.token, value)
                           removeItemValue()
                           counterData = 0
@@ -470,6 +470,7 @@ const mapStateToProps = state => {
   return {
     token: state.auth.token,
     id: state.auth.id,
+    activity: state.auth.activity
   }
 }
 

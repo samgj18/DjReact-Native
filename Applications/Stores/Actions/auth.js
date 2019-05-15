@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { RandomForestClassifier } from '../../MachineLearning/HARKE-RF'
 import * as math from 'mathjs'
 
-const prediction = new RandomForestClassifier()
+const RandomForest = new RandomForestClassifier()
 let auxCounter = 0
 let voltagesX = []
 let voltagesY = []
@@ -162,23 +162,27 @@ export const featuresList = (voltagesX, voltagesY) => {
     let dom = meanX - meanY
     let maxX = math.max(voltagesX)
     let maxY = math.max(voltagesY)
+    let minX = math.min(voltagesX)
+    let minY = math.min(voltagesY)
     let rangeX = maxX - math.min(voltagesX)
     let rangeY = maxY - math.min(voltagesY)
     let medianX = math.median(voltagesX)
     let medianY = math.median(voltagesY)
-    let rmsX = math.sqrt(math.mean(math.pow(voltagesX, 2)))
-    let rmsY = math.sqrt(math.mean(math.pow(voltagesY, 2)))
+    let rmsX = math.sqrt(math.mean(math.dotPow(voltagesX, 2)))
+    let rmsY = math.sqrt(math.mean(math.dotPow(voltagesY, 2)))
 
-    return [meanX, meanY, stdX, stdY, varX, varY, madX, madY, dom, rangeX, rangeY, medianX, medianY, rmsX, rmsY]
+    return [meanX, meanY, stdX, stdY, varX, varY, madX, madY, dom, maxX, maxY, minX, minY, rangeX, rangeY, medianX, medianY, rmsX, rmsY]
 }
 
 export const activityClassifier = (coilOneData, coilTwoData) => {
+    console.log(coilOneData)
+    console.log(coilTwoData)
     return dispatch => {
         voltagesX.push(coilOneData)
         voltagesY.push(coilTwoData)
         auxCounter = auxCounter + 1
-        if (auxCounter == 20) {
-            activity = prediction(featuresList(voltagesX, voltagesY))
+        if (auxCounter > 20) {
+            activity = RandomForest.predict((featuresList(voltagesX, voltagesY)))
             if (activity == 0) {
                 activity = 'Saltar'
             } else if (activity == 1) {
@@ -190,6 +194,7 @@ export const activityClassifier = (coilOneData, coilTwoData) => {
             }
             voltagesX = []
             voltagesY = []
+            auxCounter = 0
         }
         dispatch(activityMade(activity))
     }
