@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, TextInput, Button } from 'react-native'
 import { connect } from 'react-redux';
 import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
@@ -18,7 +18,43 @@ class UserProfile extends Component {
 
         this.state = {
             articles: '',
+            firstName: '',
+            lastName: '',
+            username: '',
+            user: false,
             dropdown: true
+        }
+        this.counter = 0
+    }
+
+    changeUserName = async () => {
+        try {
+            let config = {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${this.props.token}`
+                },
+                body: JSON.stringify({
+                    username: this.state.username,
+                    first_name: this.state.firstName,
+                    last_name: this.state.lastName
+                })
+            }
+            const URL = 'http://72.14.177.247/rest-auth/user/'
+            const response = await fetch(URL, config)
+            const responseJson = await response.json()
+            console.log(responseJson)
+            if (responseJson.first_name == this.state.firstName) {
+                this.setState({
+                    user: true,
+                }, () => {
+                    console.log(this.state.user)
+                })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -29,23 +65,53 @@ class UserProfile extends Component {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'Authorization': `Token ${this.props.token}`
                 },
             }
-            const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
+            const URL = 'http://72.14.177.247/rest-auth/user/'
             const response = await fetch(URL, config)
             const responseJson = await response.json()
+            console.log(responseJson)
             this.setState({
-                articles: responseJson.articles
+                firstName: responseJson.first_name,
             }, () => {
-                this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
-                console.log(this.props.id)
+                if (responseJson.first_name != '') {
+                    this.setState({
+                        user: true
+                    }, () => {
+                        console.log(this.state.user)
+                    })
+                }
             })
         } catch (error) {
             console.log(error)
         }
     }
 
+    async componentDidUpdate(prevProps, prevState) {
+        if (this.state.user && this.counter == 0) {
+            try {
+                this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
+                let config = {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }
+                const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
+                const response = await fetch(URL, config)
+                const responseJson = await response.json()
+                this.counter = this.counter + 1
+                this.setState({
+                    articles: responseJson.articles
+                })
+            } catch (error) {
+                console.log(error)
+            }
 
+        }
+    }
     gotoDashboard() {
         this.props.navigation.navigate('Landing');
     }
@@ -75,17 +141,13 @@ class UserProfile extends Component {
 
     render() {
         const dropdownShowOrHide = this.state.dropdown ? this.dropdownShow.bind(this) : this.dropdownHide.bind(this);
-        if (this.props.loading) {
-            return (
-                <PreLoader />
-            )
-        } else {
+        if (this.state.user) {
             return (
                 <View style={styles.MainContainer}>
                     <View style={styles.UserHoover}>
                         <Text h4
                             style={{ alignSelf: 'center' }}
-                        >Profile {this.props.id}</Text>
+                        >Hola de nuevo {this.state.firstName}</Text>
                         <Icon
                             reverse
                             name='ellipsis-h'
@@ -112,6 +174,37 @@ class UserProfile extends Component {
                     />
                 </View>
             )
+        } else {
+            return (
+                <View style={styles.MainContainerSecondary}>
+
+                    <Text h4
+                        style={{ alignSelf: 'center' }}
+                    >Solo un paso más </Text>
+
+                    <TextInput
+                        placeholder="Ingresa tu usuario"
+                        onChangeText={username => this.setState({ username })}
+                        underlineColorAndroid='transparent'
+                        style={styles.TextInputStyleClass}
+                    />
+
+                    <TextInput
+                        placeholder="Ingresa tu nombre"
+                        onChangeText={firstName => this.setState({ firstName })}
+                        underlineColorAndroid='transparent'
+                        style={styles.TextInputStyleClass}
+                    />
+
+                    <TextInput
+                        placeholder="Ingresa tu apellido"
+                        onChangeText={lastName => this.setState({ lastName })}
+                        underlineColorAndroid='transparent'
+                        style={styles.TextInputStyleClass}
+                    />
+                    <Button title='¡Enviar!' onPress={this.changeUserName.bind(this)} color="#2196F3" />
+                </View>
+            )
         }
     }
 }
@@ -125,6 +218,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 11
     },
+    MainContainerSecondary: {
+        justifyContent: 'center',
+        flex: 1,
+        margin: 10,
+    },
     UserHoover: {
         flex: 1,
         alignItems: 'flex-end',
@@ -133,7 +231,16 @@ const styles = StyleSheet.create({
     UserLogout: {
         flex: 1,
         justifyContent: 'flex-end'
-    }
+    },
+    TextInputStyleClass: {
+
+        textAlign: 'center',
+        marginBottom: 7,
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#2196F3',
+        borderRadius: 5,
+    },
 });
 
 const mapStateToProps = state => {
