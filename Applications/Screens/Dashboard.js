@@ -26,8 +26,10 @@ class Dashboard extends Component {
       activity = 'Correr'
     } else if (this.props.activity == 3) {
       activity = 'Estar quieto'
-    } else {
+    } else if (this.props.activity == 4) {
       activity = 'Subir o bajar escaleras'
+    } else {
+      activity = 'Reconociendo actividad'
     }
 
     if (this.props.loading) {
