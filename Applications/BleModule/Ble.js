@@ -355,13 +355,6 @@ class Ble extends Component {
     }
   }
 
-  handleActionFunction = (peripheral) => {
-    if (this.state.checked) {
-      this.bleActionTraining(peripheral)
-    } else {
-      this.bleActionTesting(peripheral)
-    }
-  }
 
 
   render() {

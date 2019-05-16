@@ -20,7 +20,6 @@ const RootStack = createStackNavigator(
 );
 
 
-
 export default createAppContainer(RootStack);
 /* React Native concept is to create Single Apps Apliccations, in other words,
 just one screen for the whole project and re-rendering according to the needs

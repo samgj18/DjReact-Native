@@ -19,7 +19,7 @@ class Dashboard extends Component {
     let activity = ''
 
     if (this.props.activity == 0) {
-      activity = 'Squads'
+      activity = 'Torso'
     } else if (this.props.activity == 1) {
       activity = 'Saltar'
     } else if (this.props.activity == 2) {
