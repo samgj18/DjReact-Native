@@ -5,7 +5,7 @@ export const sendDataToServer = async (token, data) => {
     let config = {
       method: 'POST',
       headers: {
-        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
+        'Authorization': 'Token' + ' ' + token,
         'Content-Type': 'application/json',
       },
       body: data
@@ -24,7 +24,7 @@ export const sendDataToServerTest = async (token, data) => {
     let config = {
       method: 'POST',
       headers: {
-        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
+        'Authorization': 'Token' + ' ' + token,
         'Content-Type': 'application/json',
       },
       body: data
@@ -44,7 +44,7 @@ export const fetchDataFromServer = async (token, url) => {
     let config = {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
+        'Authorization': 'Token' + ' ' + token,
         'Content-Type': 'application/json',
       },
     }
@@ -67,7 +67,7 @@ export const fetchDataFromServerBatery = async (token, url) => {
     let config = {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
+        'Authorization': 'Token' + ' ' + token,
         'Content-Type': 'application/json',
       },
     }
