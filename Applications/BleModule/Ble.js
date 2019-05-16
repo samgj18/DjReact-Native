@@ -266,102 +266,6 @@ class Ble extends Component {
     }
   }
 
-  bleActionTesting = (peripheral) => {
-    if (peripheral) {
-      if (peripheral.connected) {
-        BleManager.disconnect(peripheral.id);
-      } else {
-        BleManager.connect(peripheral.id).then(() => {
-          let peripherals = this.state.peripherals;
-          let p = peripherals.get(peripheral.id);
-          if (p) {
-            p.connected = true;
-            peripherals.set(peripheral.id, p);
-            this.setState({ peripherals });
-          }
-          BleManager.retrieveServices(peripheral.id).then(() => {
-            const serviceUUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
-            const characteristicUUID = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
-            let arrayDataChar = []
-            let userVoltageData = []
-            let coilOneData = []
-            let coilTwoData = []
-            let counterData = 0
-            let date = new Date().toISOString()
-            /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
-            characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
-            reading of the data from the device of interest */
-            BleManager.startNotification(peripheral.id, serviceUUID, characteristicUUID).then(() => {
-              BleManager.read(peripheral.id, serviceUUID, characteristicUUID)
-                .then(() => {
-                  return BleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', (data) => {
-                    arrayDataChar = data.value.map(value => {
-                      return String.fromCharCode(value)
-                    })
-                    arrayDataChar = arrayDataChar.join('')
-                    let res = arrayDataChar.split("#")
-                    coilOneData = res[0]
-                    coilTwoData = res[1]
-                    userVoltageData = res[2]
-
-                    this.props.activityRecognition(coilOneData, coilTwoData)
-                    console.log(this.props.activity)
-                    let btInfo = {
-                      "user": `${this.props.id}`,
-                      "detected_activity": `${this.props.activity}`,
-                      "real_activity": `${this.state.pickerValue}`,
-                      "datetime": `${date}`,
-                    }
-                    if (this.dataFlag) {
-                      AsyncStorage.getItem('databaseTest').then((value) => {
-                        let existingData = JSON.parse(value)
-                        if (!existingData) {
-                          existingData = []
-                        }
-                        existingData.push(btInfo)
-                        AsyncStorage.setItem('databaseTest', JSON.stringify(existingData))
-                          .then(() => {
-                            console.log(existingData)
-                          })
-                          .catch(() => {
-                            console.log('There was an error saving the data')
-                          })
-                        if (counterData > 20) {
-                          sendDataToServerTest(this.props.token, value)
-                          removeItemValue()
-                          counterData = 0
-                        }
-                        counterData = counterData + 1
-                      })
-                        .catch((error) => {
-                          console.log(error)
-                        })
-                    } else {
-                      console.log('Habilte la bandera para enviar los datos')
-                    }
-                  })
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-            }).catch((error) => {
-              console.log(error);
-            });
-          });
-        }).catch((error) => {
-          console.log(error);
-        });
-      }
-    }
-  }
-
-  handleActionFunction = (peripheral) => {
-    if (this.state.checked) {
-      this.bleActionTraining(peripheral)
-    } else {
-      this.bleActionTesting(peripheral)
-    }
-  }
 
 
   render() {
@@ -414,7 +318,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.bleActionTesting(item)}>
+              <TouchableHighlight onPress={() => this.bleActionTraining(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>

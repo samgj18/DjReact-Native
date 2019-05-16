@@ -5,7 +5,7 @@ export const sendDataToServer = async (token, data) => {
     let config = {
       method: 'POST',
       headers: {
-        'Authorization': 'Token' + ' ' + token,
+        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
         'Content-Type': 'application/json',
       },
       body: data
@@ -24,7 +24,7 @@ export const sendDataToServerTest = async (token, data) => {
     let config = {
       method: 'POST',
       headers: {
-        'Authorization': 'Token' + ' ' + token,
+        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
         'Content-Type': 'application/json',
       },
       body: data
@@ -44,7 +44,7 @@ export const fetchDataFromServer = async (token, url) => {
     let config = {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + ' ' + token,
+        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
         'Content-Type': 'application/json',
       },
     }
@@ -67,7 +67,7 @@ export const fetchDataFromServerBatery = async (token, url) => {
     let config = {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + ' ' + token,
+        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
         'Content-Type': 'application/json',
       },
     }
@@ -127,8 +127,7 @@ rowConverterVoltageCoils = (data) => {
 
 export const removeItemValue = async () => {
   try {
-    await AsyncStorage.removeItem('databaseTest');
-    //await AsyncStorage.removeItem('databaseTrain');
+    await AsyncStorage.removeItem('databaseTrain');
   }
   catch (exception) {
     console.log('Unable to erase data')

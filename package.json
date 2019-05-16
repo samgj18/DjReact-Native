@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start-max": "node --max-old-space-size=8192 node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
   "dependencies": {
