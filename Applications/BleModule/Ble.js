@@ -297,11 +297,11 @@ class Ble extends Component {
               onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
             >
               <Picker.Item label='Seleccione una actividad' value='' />
-              <Picker.Item label='Caminar' value='1' />
+              <Picker.Item label='Torso' value='1' />
               <Picker.Item label='Saltar' value='2' />
               <Picker.Item label='Correr' value='3' />
               <Picker.Item label='Permancer quieto' value='4' />
-              <Picker.Item label='Subir o Bajar escaleras' value='5' />
+              <Picker.Item label='Caminar' value='5' />
             </Picker>
           ) : null}
           <CheckBox

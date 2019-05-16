@@ -27,7 +27,7 @@ class Dashboard extends Component {
     } else if (this.props.activity == 3) {
       activity = 'Estar quieto'
     } else if (this.props.activity == 4) {
-      activity = 'Subir o bajar escaleras'
+      activity = 'Caminar'
     } else {
       activity = 'Reconociendo actividad'
     }
