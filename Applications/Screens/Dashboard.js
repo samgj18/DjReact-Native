@@ -28,6 +28,8 @@ class Dashboard extends Component {
       activity = 'Estar quieto'
     } else if (this.props.activity == 4) {
       activity = 'Subir o bajar escaleras'
+    } else {
+      activity = ' No se identifica'
     }
 
     if (this.props.loading) {
