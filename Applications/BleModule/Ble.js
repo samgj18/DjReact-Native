@@ -179,7 +179,7 @@ class Ble extends Component {
   }
 
 
-  bleActionTesting = (peripheral) => {
+  bleActionTraining = (peripheral) => {
     if (peripheral) {
       if (peripheral.connected) {
         BleManager.disconnect(peripheral.id);
@@ -200,7 +200,6 @@ class Ble extends Component {
             let coilOneData = []
             let coilTwoData = []
             let counterData = 0
-            let date = new Date().toISOString()
             /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
             characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
             reading of the data from the device of interest */
@@ -217,22 +216,21 @@ class Ble extends Component {
                     coilTwoData = res[1]
                     userVoltageData = res[2]
 
-                    this.props.activityRecognition(coilOneData, coilTwoData)
-                    console.log(this.props.activity)
                     let btInfo = {
                       "user": `${this.props.id}`,
-                      "detected_activity": `${this.props.activity}`,
-                      "real_activity": `${this.state.pickerValue}`,
-                      "datetime": `${date}`,
+                      "voltage_coil_1": `${coilOneData}`,
+                      "voltage_coil_2": `${coilTwoData}`,
+                      "voltage_generated_by_user": `${userVoltageData}`,
+                      "activity": `${this.state.pickerValue}`
                     }
                     if (this.dataFlag) {
-                      AsyncStorage.getItem('databaseTest').then((value) => {
+                      AsyncStorage.getItem('databaseTrain').then((value) => {
                         let existingData = JSON.parse(value)
                         if (!existingData) {
                           existingData = []
                         }
                         existingData.push(btInfo)
-                        AsyncStorage.setItem('databaseTest', JSON.stringify(existingData))
+                        AsyncStorage.setItem('databaseTrain', JSON.stringify(existingData))
                           .then(() => {
                             console.log(existingData)
                           })
@@ -240,7 +238,7 @@ class Ble extends Component {
                             console.log('There was an error saving the data')
                           })
                         if (counterData > 20) {
-                          sendDataToServerTest(this.props.token, value)
+                          sendDataToServer(this.props.token, value)
                           removeItemValue()
                           counterData = 0
                         }
@@ -318,7 +316,7 @@ class Ble extends Component {
           renderRow={(item) => {
             const color = item.connected ? 'rgba(52, 152, 219,0.8)' : 'rgba(52, 152, 219,0.5)';
             return (
-              <TouchableHighlight onPress={() => this.bleActionTesting(item)}>
+              <TouchableHighlight onPress={() => this.bleActionTraining(item)}>
                 <View style={[styles.row, { backgroundColor: color }]}>
                   <Text style={{ fontSize: 12, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.name}</Text>
                   <Text style={{ fontSize: 8, textAlign: 'center', color: '#333333', padding: 10, borderRadius: 10 }}>{item.id}</Text>

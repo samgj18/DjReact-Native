@@ -127,8 +127,8 @@ rowConverterVoltageCoils = (data) => {
 
 export const removeItemValue = async () => {
   try {
-    await AsyncStorage.removeItem('databaseTest');
-    //await AsyncStorage.removeItem('databaseTrain');
+    //await AsyncStorage.removeItem('databaseTest');
+    await AsyncStorage.removeItem('databaseTrain');
   }
   catch (exception) {
     console.log('Unable to erase data')
