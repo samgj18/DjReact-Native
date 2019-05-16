@@ -44,7 +44,6 @@ const INITIAL_STATE = {
   dataDoubleVoltage: '',
   dataDoubleVoltageCoilOne: '',
   dataDoubleVoltageCoilTwo: '',
-  checked: false,
   iconColor: 'red',
   detectedActivity: ''
 }
@@ -291,26 +290,17 @@ class Ble extends Component {
           />
         </View>
         <View style={styles.boxTwo}>
-          {this.state.checked ? (
-            <Picker
-              selectedValue={this.state.pickerValue}
-              onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
-            >
-              <Picker.Item label='Seleccione una actividad' value='' />
-              <Picker.Item label='Caminar' value='1' />
-              <Picker.Item label='Saltar' value='2' />
-              <Picker.Item label='Correr' value='3' />
-              <Picker.Item label='Permancer quieto' value='4' />
-              <Picker.Item label='Subir o Bajar escaleras' value='5' />
-            </Picker>
-          ) : null}
-          <CheckBox
-            title='Habilitar | Deshabilitar modo de entrenamiento'
-            checkedIcon='dot-circle-o'
-            uncheckedIcon='circle-o'
-            checked={this.state.checked}
-            onPress={() => this.setState({ checked: !this.state.checked })}
-          />
+          <Picker
+            selectedValue={this.state.pickerValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
+          >
+            <Picker.Item label='Seleccione una actividad' value='' />
+            <Picker.Item label='Caminar' value='1' />
+            <Picker.Item label='Saltar' value='2' />
+            <Picker.Item label='Correr' value='3' />
+            <Picker.Item label='Permancer quieto' value='4' />
+            <Picker.Item label='Subir o Bajar escaleras' value='5' />
+          </Picker>
         </View>
         <ListView
           enableEmptySections={true}
