@@ -116,12 +116,12 @@ class Batery extends Component {
                         {this.state.bateryExtension ? (
                             <Text h4
                                 style={{ textAlign: 'center' }}>La extensión de la vida útil de
-                            la batería fue de {this.state.bateryExtension} segundos</Text>
+                            la batería fue de {this.state.bateryExtension} segundos.</Text>
                         ) : null}
                         {this.state.bateryEnergy ? (
                             <Text h4
-                                style={{ textAlign: 'center' }}>La extensión de la vida útil de
-                            la batería fue de {this.state.bateryEnergy} Jules</Text>
+                                style={{ textAlign: 'center', paddingTop: 20 }}>La extensión de la vida útil de
+                            la batería fue de {this.state.bateryEnergy} Jules.</Text>
                         ) : null}
                         <Icon
                             reverse
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         paddingTop: 50
     },
     Consulta: {
-        flex: 1,
+        flex: 2,
         alignItems: 'center',
         justifyContent: 'center'
     },

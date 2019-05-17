@@ -75,7 +75,6 @@ class Historics extends Component {
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
         const response = await fetchDataFromServer(this.props.token,
             `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
-        console.log(response[0])
         this.setState({
             voltageCoilOne: response[0]
         }, () => {

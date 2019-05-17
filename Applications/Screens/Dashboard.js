@@ -39,7 +39,7 @@ class Dashboard extends Component {
     />
     let image = <Image
       style={{ width: 100, height: 100, borderRadius: 10 }}
-      source={{ uri: 'https://pbs.twimg.com/media/DUupQHIU8AAJj24.jpg' }}
+      source={{ uri: 'https://www.selfpaper.com/imagenes/reloj-de-pared-para-oficina-38-cms-extra-grande-g.jpg' }}
     />
 
     if (this.props.activity == 0) {
