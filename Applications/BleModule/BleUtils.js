@@ -63,9 +63,7 @@ export const fetchDataFromServer = async (token, url) => {
   }
 }
 
-export const calculateLifeExpansionBatery = (voltagesCoilOne, voltagesCoilTwo) => {
-  let voltagesCoilOneFloat = voltagesCoilOne.map(item => parseFloat(item))
-  let voltagesCoilTwoFloat = voltagesCoilTwo.map(item => parseFloat(item))
+export const calculateLifeExpansionBatery = (voltagesCoilOneFloat, voltagesCoilTwoFloat) => {
   let vAnterior = 0
   let deltaTiempo = 0.05
   let caidaDiodo = 1.8
@@ -77,38 +75,37 @@ export const calculateLifeExpansionBatery = (voltagesCoilOne, voltagesCoilTwo) =
   let potInstaDos = 0
   let countUno = 0
   let countDos = 0
-  for (let i of voltagesCoilOneFloat) {
-    if (i = 0) {
+  for (let i = 0; i < voltagesCoilOneFloat.length; i++) {
+    if (i == 0) {
       vAnterior = 0
     } else {
       vAnterior = voltagesCoilOneFloat[i - 1]
     }
-    if (voltagesCoilOneFloat[i] > 1.8) {
+    if (voltagesCoilOneFloat[i] > caidaDiodo) {
       potInsta = ((voltagesCoilOneFloat[i] - caidaDiodo) * (voltagesCoilOneFloat[i] - vAnterior) * (deltaTiempo)) / inductanciaBobUno
       potBobinaUno = potBobinaUno + potInstaUno
       countUno += 1
     }
-
-    i += 1
   }
   vAnterior = 0
-  for (let i of voltagesCoilTwoFloat) {
-    if (i = 0) {
+  for (let i = 0; i < voltagesCoilTwoFloat.length; i++) {
+    console.log(i)
+    if (i == 0) {
       vAnterior = 0
     } else {
       vAnterior = voltagesCoilTwoFloat[i - 1]
     }
-    if (voltagesCoilTwoFloat[i] > 1.8) {
+    if (voltagesCoilTwoFloat[i] > caidaDiodo) {
       potInstaDos = ((voltagesCoilTwoFloat[i] - caidaDiodo) * (voltagesCoilTwoFloat[i] - vAnterior) * (deltaTiempo)) / inductanciaBobDos
       potBobinaDos = potBobinaDos + potInstaDos
       countDos += 1
     }
-    i += 1
   }
   const energiaBobUno = (potBobinaUno * countUno)
   const energiaBobDos = (potBobinaDos * countDos)
-  const bateryLifeExtension = energiaBobDos + energiaBobUno
-  return bateryLifeExtension
+  const bateryEnergy = energiaBobDos + energiaBobUno
+  const bateryLifeExtension = bateryEnergy / 0.1282
+  return [bateryLifeExtension, bateryEnergy]
 }
 
 rowConverterVoltageUser = (data) => {
@@ -136,6 +133,7 @@ rowConverterVoltageCoils = (data) => {
     voltageCoilTwo.push(parseInt(values[1]))
     activity.push(parseInt(values[2]))
   }
+  console.log(voltageCoilOne)
   return [voltageCoilOne, voltageCoilTwo, activity]
 }
 

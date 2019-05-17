@@ -67,7 +67,6 @@ class UserProfile extends Component {
             const URL = 'http://72.14.177.247/rest-auth/user/'
             const response = await fetch(URL, config)
             const responseJson = await response.json()
-            console.log(responseJson)
             this.setState({
                 firstName: responseJson.first_name,
             }, () => {

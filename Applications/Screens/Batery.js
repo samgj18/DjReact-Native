@@ -20,6 +20,7 @@ class Batery extends Component {
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
             bateryExtension: null,
+            bateryEnergy: null
         }
         this.counter = 0
     }
@@ -37,7 +38,6 @@ class Batery extends Component {
                 initialDatePicked: date,
                 header: 'Selecciona la fecha final'
             }, () => {
-                console.log(this.state.initialDatePicked)
                 this.counter = this.counter + 1
                 this.showDateTimePicker()
                 this.refs.toast.show('Selecciona fecha final', DURATION.LENGTH_SHORT)
@@ -47,7 +47,6 @@ class Batery extends Component {
                 endDatePicked: date,
                 header: '¡Realiza la consulta con el botón de abajo!'
             }, () => {
-                console.log(this.state.endDatePicked)
                 this.hideDateTimePicker()
                 this.counter = 0
             })
@@ -76,7 +75,8 @@ class Batery extends Component {
         const bateryLifeExtension = calculateLifeExpansionBatery(response[0], response[1])
         console.log(bateryLifeExtension)
         this.setState({
-            bateryExtension: bateryLifeExtension
+            bateryExtension: bateryLifeExtension[0],
+            bateryEnergy: bateryLifeExtension[1]
         }, () => {
             if (this.state.bateryExtension != null) {
                 this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
@@ -100,7 +100,7 @@ class Batery extends Component {
             return (
                 <View style={styles.MainContainer}>
                     <View style={styles.Historics}>
-                        <Text h4
+                        <Text h3
                             style={{ textAlign: 'center' }}
                         >Extensión vida útil de la batería</Text>
                         <Text> {this.state.header} </Text>
@@ -114,8 +114,14 @@ class Batery extends Component {
                     </View>
                     <View style={styles.Consulta}>
                         {this.state.bateryExtension ? (
-                            <Text style={{ alignSelf: 'center' }}>La extensión de la vida útil de
+                            <Text h4
+                                style={{ textAlign: 'center' }}>La extensión de la vida útil de
                             la batería fue de {this.state.bateryExtension} segundos</Text>
+                        ) : null}
+                        {this.state.bateryEnergy ? (
+                            <Text h4
+                                style={{ textAlign: 'center' }}>La extensión de la vida útil de
+                            la batería fue de {this.state.bateryEnergy} Jules</Text>
                         ) : null}
                         <Icon
                             reverse
@@ -163,7 +169,7 @@ const styles = StyleSheet.create({
     Consulta: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'center'
     },
     Charts: {
         flex: 1,
