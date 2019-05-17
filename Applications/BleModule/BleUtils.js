@@ -10,9 +10,10 @@ export const sendDataToServer = async (token, data) => {
       },
       body: data
     }
-    const URL = 'http://72.14.177.247/voltages/train-data/'
+    const URL = 'http://72.14.177.247/voltages/all-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
+    removeItemValueUser()
     console.log(serverResponse)
   } catch (error) {
     console.log(error)
@@ -32,6 +33,7 @@ export const sendDataToServerTest = async (token, data) => {
     const URL = 'http://72.14.177.247/voltages/test-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
+    removeItemValue()
     console.log(serverResponse)
   } catch (error) {
     console.log(error)
@@ -53,7 +55,8 @@ export const fetchDataFromServer = async (token, url) => {
     const serverResponse = await response.json()
     const data = serverResponse.map(row => ({
       voltageCoilOne: row.voltage_coil_1,
-      voltageCoilTwo: row.voltage_coil_2
+      voltageCoilTwo: row.voltage_coil_2,
+      activity: row.activity,
     }))
     const rowVoltageData = rowConverterVoltageCoils(data)
     return (rowVoltageData)
@@ -111,6 +114,7 @@ rowConverterVoltageUser = (data) => {
 rowConverterVoltageCoils = (data) => {
   voltageCoilOne = []
   voltageCoilTwo = []
+  activity = []
   const headers = Object.keys(data[0])
   for (const row of data) {
     const values = headers.map(header => {
@@ -118,8 +122,9 @@ rowConverterVoltageCoils = (data) => {
     })
     voltageCoilOne.push(parseInt(values[0]))
     voltageCoilTwo.push(parseInt(values[1]))
+    activity.push(parseInt(values[2]))
   }
-  return [voltageCoilOne, voltageCoilTwo]
+  return [voltageCoilOne, voltageCoilTwo, activity]
 }
 
 
@@ -128,7 +133,15 @@ rowConverterVoltageCoils = (data) => {
 export const removeItemValue = async () => {
   try {
     await AsyncStorage.removeItem('databaseTest');
-    //await AsyncStorage.removeItem('databaseTrain');
+  }
+  catch (exception) {
+    console.log('Unable to erase data')
+  }
+}
+
+export const removeItemValueUser = async () => {
+  try {
+    await AsyncStorage.removeItem('databaseTrain');
   }
   catch (exception) {
     console.log('Unable to erase data')

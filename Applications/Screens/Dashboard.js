@@ -29,7 +29,7 @@ class Dashboard extends Component {
     } else if (this.props.activity == 4) {
       activity = 'Caminar'
     } else {
-      activity = 'Reconociendo actividad'
+      activity = 'Reconociendo actividad...'
     }
 
     if (this.props.loading) {
@@ -46,7 +46,7 @@ class Dashboard extends Component {
             <Text
               style={{ alignSelf: 'flex-start', paddingTop: 30 }}
             >
-              La actividad que usted está realizando es: {activity}
+              {activity}
             </Text>
           </View>
           <Toast

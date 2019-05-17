@@ -200,6 +200,7 @@ class Ble extends Component {
             let coilOneData = []
             let coilTwoData = []
             let counterData = 0
+            let counterDataUser = 0
             let date = new Date().toISOString()
             /* Since we're delimiting the data collection from a single device don't ask for serviceUUID or the
             characteristicUUID we give it to the connection in order to run the BleManager.startNotification and the
@@ -218,14 +219,44 @@ class Ble extends Component {
                     userVoltageData = res[2]
 
                     this.props.activityRecognition(coilOneData, coilTwoData)
-                    console.log(this.props.activity)
                     let btInfo = {
                       "user": `${this.props.id}`,
                       "detected_activity": `${this.props.activity}`,
                       "real_activity": `${this.state.pickerValue}`,
                       "datetime": `${date}`,
                     }
+                    let btInfoUser = {
+                      "user": `${this.props.id}`,
+                      "voltage_coil_1": `${coilOneData}`,
+                      "voltage_coil_2": `${coilTwoData}`,
+                      "voltage_generated_by_user": `${userVoltageData}`,
+                      "activity": `${this.state.pickerValue}`,
+                      "datetime": `${date}`
+                    }
+
                     if (this.dataFlag) {
+                      AsyncStorage.getItem('databaseTrain').then((value) => {
+                        let existingDataUser = JSON.parse(value)
+                        if (!existingDataUser) {
+                          existingDataUser = []
+                        }
+                        existingDataUser.push(btInfoUser)
+                        AsyncStorage.setItem('databaseTrain', JSON.stringify(existingDataUser))
+                          .then(() => {
+                            console.log(existingDataUser)
+                          })
+                          .catch(() => {
+                            console.log('There was an error saving the data')
+                          })
+                        if (counterDataUser > 20) {
+                          sendDataToServer(this.props.token, value)
+                          counterDataUser = 0
+                        }
+                        counterDataUser = counterDataUser + 1
+                      })
+                        .catch((error) => {
+                          console.log(error)
+                        })
                       AsyncStorage.getItem('databaseTest').then((value) => {
                         let existingData = JSON.parse(value)
                         if (!existingData) {
@@ -241,7 +272,6 @@ class Ble extends Component {
                           })
                         if (counterData > 20) {
                           sendDataToServerTest(this.props.token, value)
-                          removeItemValue()
                           counterData = 0
                         }
                         counterData = counterData + 1
@@ -291,19 +321,17 @@ class Ble extends Component {
           />
         </View>
         <View style={styles.boxTwo}>
-          {this.state.checked ? (
-            <Picker
-              selectedValue={this.state.pickerValue}
-              onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
-            >
-              <Picker.Item label='Seleccione una actividad' value='' />
-              <Picker.Item label='Torso' value='1' />
-              <Picker.Item label='Saltar' value='2' />
-              <Picker.Item label='Correr' value='3' />
-              <Picker.Item label='Permancer quieto' value='4' />
-              <Picker.Item label='Caminar' value='5' />
-            </Picker>
-          ) : null}
+          <Picker
+            selectedValue={this.state.pickerValue}
+            onValueChange={(itemValue, itemIndex) => this.setState({ pickerValue: itemValue })}
+          >
+            <Picker.Item label='Seleccione una actividad' value='' />
+            <Picker.Item label='Torso' value='1' />
+            <Picker.Item label='Saltar' value='2' />
+            <Picker.Item label='Correr' value='3' />
+            <Picker.Item label='Permancer quieto' value='4' />
+            <Picker.Item label='Caminar' value='5' />
+          </Picker>
           <CheckBox
             title='Habilitar | Deshabilitar modo de entrenamiento'
             checkedIcon='dot-circle-o'
