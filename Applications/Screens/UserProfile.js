@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, TextInput, Button } from 'react-native'
+import { View, StyleSheet, TextInput, Button, ScrollView } from 'react-native'
 import { connect } from 'react-redux';
 import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
 import ModalDropdown from 'react-native-modal-dropdown';
 import * as actions from '../Stores/Actions/auth'
+
 
 
 
@@ -114,25 +115,60 @@ class UserProfile extends Component {
         const dropdownShowOrHide = this.state.dropdown ? this.dropdownShow.bind(this) : this.dropdownHide.bind(this);
         if (this.state.user) {
             return (
-                <View style={styles.MainContainer}>
+                <ScrollView style={styles.MainContainer}>
                     <View style={styles.UserHoover}>
                         <Text h4
                             style={{ alignSelf: 'center' }}
                         >Hola de nuevo {this.state.firstName}</Text>
-                        <Icon
-                            reverse
-                            name='ellipsis-h'
-                            type='font-awesome'
-                            color='black'
-                            onPress={dropdownShowOrHide}
-                        />
-                        <ModalDropdown ref={el => this.dropdown = el}
-                            defaultValue=''
-                            options={['Cerrar sesión']}
-                            onSelect={this.dropdownOnSelect.bind(this)}
-                        />
-
+                        <View style={{ paddingTop: 30 }}>
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >Recuerda que : </Text>
+                            <Icon size={24} color="black" name="home" />
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >es el lugar donde estás</Text>
+                        </View>
+                        <View style={{ paddingTop: 30 }}>
+                            <Icon size={24} color="black" name="history" />
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >¡Puedes consultar las actividades realizadas y el voltaje entregado!</Text>
+                        </View>
+                        <View style={{ paddingTop: 30 }}>
+                            <Icon size={24} color="black" name="tv" />
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >¡Podrás ver la actividad que detectamos de ti!</Text>
+                        </View>
+                        <View style={{ paddingTop: 30 }}>
+                            <Icon size={24} color="black" name="settings" />
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >¡Podrás conectarte con el módulo BLE!</Text>
+                        </View>
+                        <View style={{ paddingTop: 30 }}>
+                            <Icon size={24} color="black" name="battery-full" />
+                            <Text
+                                style={{ alignSelf: 'center' }}
+                            >¡Podrás consultar la energía entregada a la batería!</Text>
+                        </View>
+                        <View style={{ paddingTop: 40 }}>
+                            <Icon
+                                reverse
+                                name='ellipsis-h'
+                                type='font-awesome'
+                                color='black'
+                                onPress={dropdownShowOrHide}
+                            />
+                            <ModalDropdown ref={el => this.dropdown = el}
+                                defaultValue=''
+                                options={['Cerrar sesión']}
+                                onSelect={this.dropdownOnSelect.bind(this)}
+                            />
+                        </View>
                     </View>
+
                     <Toast
                         ref="toast"
                         style={{ backgroundColor: 'transparent' }}
@@ -143,7 +179,7 @@ class UserProfile extends Component {
                         opacity={0.8}
                         textStyle={{ color: 'black' }}
                     />
-                </View>
+                </ScrollView>
             )
         } else {
             return (
@@ -196,7 +232,8 @@ const styles = StyleSheet.create({
     },
     UserHoover: {
         flex: 1,
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        justifyContent: 'center',
         paddingTop: 50
     },
     UserLogout: {

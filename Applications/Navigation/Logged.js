@@ -47,7 +47,7 @@ const DashboardTabNavigator = createMaterialBottomTabNavigator({
     navigationOptions: {
       title: 'Profile',
       tabBarLabel: 'Profile',
-      tabBarIcon: <Icon size={24} color="white" name="person-outline" />
+      tabBarIcon: <Icon size={24} color="white" name="home" />
     }
   }
 }, {
