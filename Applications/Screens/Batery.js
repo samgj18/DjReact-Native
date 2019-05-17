@@ -9,7 +9,7 @@ import { Icon } from 'react-native-elements'
 import { AreaChart, XAxis, YAxis } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
-import { fetchDataFromServerBatery, calculateLifeExpansionBatery } from '../BleModule/BleUtils'
+import { fetchDataFromServer, calculateLifeExpansionBatery } from '../BleModule/BleUtils'
 
 class Batery extends Component {
     constructor(props) {
@@ -19,7 +19,6 @@ class Batery extends Component {
             initialDatePicked: '',
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
-            data: [],
             bateryExtension: null,
         }
         this.counter = 0
@@ -72,15 +71,14 @@ class Batery extends Component {
     }
 
     handleDataFetch = async (initialDatePicked, endDatePicked) => {
-        const response = await fetchDataFromServerBatery(this.props.token,
+        const response = await fetchDataFromServer(this.props.token,
             `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
-        const bateryLifeExtension = calculateLifeExpansionBatery(response)
+        const bateryLifeExtension = calculateLifeExpansionBatery(response[0], response[1])
         console.log(bateryLifeExtension)
         this.setState({
-            data: response,
             bateryExtension: bateryLifeExtension
         }, () => {
-            if (this.state.data != []) {
+            if (this.state.bateryExtension != null) {
                 this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
             } else {
                 this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
@@ -114,36 +112,6 @@ class Batery extends Component {
                             onPress={this.showDateTimePicker}
                         />
                     </View>
-                    <View style={styles.Charts}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <YAxis
-                                data={this.state.data}
-                                contentInset={{ top: 30, bottom: 30 }}
-                                svg={{
-                                    fill: 'grey',
-                                    fontSize: 10,
-                                }}
-                                numberOfTicks={this.state.data.length}
-                                formatLabel={value => `${value}V`}
-                            />
-                            <AreaChart
-                                style={{ height: 200, flex: 1 }}
-                                data={this.state.data}
-                                contentInset={{ top: 30, bottom: 30 }}
-                                curve={shape.curveNatural}
-                                svg={{ fill: '#CFFCFF' }}
-                            >
-                            </AreaChart>
-                        </View>
-                        <XAxis
-                            style={{ marginHorizontal: -10 }}
-                            data={this.state.data}
-                            formatLabel={(value, index) => index}
-                            contentInset={{ left: 30, right: 30 }}
-                            svg={{ fontSize: 10, fill: 'grey' }}
-                        />
-                    </View>
-
                     <View style={styles.Consulta}>
                         {this.state.bateryExtension ? (
                             <Text style={{ alignSelf: 'center' }}>La extensión de la vida útil de

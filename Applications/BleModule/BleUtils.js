@@ -13,7 +13,6 @@ export const sendDataToServer = async (token, data) => {
     const URL = 'http://72.14.177.247/voltages/all-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
-    removeItemValueUser()
     console.log(serverResponse)
   } catch (error) {
     console.log(error)
@@ -33,7 +32,6 @@ export const sendDataToServerTest = async (token, data) => {
     const URL = 'http://72.14.177.247/voltages/test-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
-    removeItemValue()
     console.log(serverResponse)
   } catch (error) {
     console.log(error)
@@ -65,39 +63,51 @@ export const fetchDataFromServer = async (token, url) => {
   }
 }
 
-export const fetchDataFromServerBatery = async (token, url) => {
-  try {
-    let config = {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Token' + ' ' + token,
-        'Content-Type': 'application/json',
-      },
-    }
-    const URL = url
-    const response = await fetch(URL, config)
-    const serverResponse = await response.json()
-    const data = serverResponse.map(row => ({
-      voltageGeneratedByUser: row.voltage_generated_by_user,
-    }))
-    const rowVoltageData = rowConverterVoltageUser(data)
-    return (rowVoltageData)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export const calculateLifeExpansionBatery = (voltages) => {
-  let bateryLifeExtensionCounter = 0
-  voltages.map(voltage => {
-    const doubleVoltage = parseFloat(voltage)
-    if (doubleVoltage >= 3.290) {
-      bateryLifeExtensionCounter = bateryLifeExtensionCounter + 1
+export const calculateLifeExpansionBatery = (voltagesCoilOne, voltagesCoilTwo) => {
+  let voltagesCoilOneFloat = voltagesCoilOne.map(item => parseFloat(item))
+  let voltagesCoilTwoFloat = voltagesCoilTwo.map(item => parseFloat(item))
+  let vAnterior = 0
+  let deltaTiempo = 0.05
+  let caidaDiodo = 1.8
+  let inductanciaBobUno = 2.16743
+  let inductanciaBobDos = 2.16808
+  let potBobinaUno = 0
+  let potBobinaDos = 0
+  let potInstaUno = 0
+  let potInstaDos = 0
+  let countUno = 0
+  let countDos = 0
+  for (let i of voltagesCoilOneFloat) {
+    if (i = 0) {
+      vAnterior = 0
     } else {
-      bateryLifeExtensionCounter = 0
+      vAnterior = voltagesCoilOneFloat[i - 1]
     }
-  })
-  const bateryLifeExtension = 0.05 * bateryLifeExtensionCounter
+    if (voltagesCoilOneFloat[i] > 1.8) {
+      potInsta = ((voltagesCoilOneFloat[i] - caidaDiodo) * (voltagesCoilOneFloat[i] - vAnterior) * (deltaTiempo)) / inductanciaBobUno
+      potBobinaUno = potBobinaUno + potInstaUno
+      countUno += 1
+    }
+
+    i += 1
+  }
+  vAnterior = 0
+  for (let i of voltagesCoilTwoFloat) {
+    if (i = 0) {
+      vAnterior = 0
+    } else {
+      vAnterior = voltagesCoilTwoFloat[i - 1]
+    }
+    if (voltagesCoilTwoFloat[i] > 1.8) {
+      potInstaDos = ((voltagesCoilTwoFloat[i] - caidaDiodo) * (voltagesCoilTwoFloat[i] - vAnterior) * (deltaTiempo)) / inductanciaBobDos
+      potBobinaDos = potBobinaDos + potInstaDos
+      countDos += 1
+    }
+    i += 1
+  }
+  const energiaBobUno = (potBobinaUno * countUno)
+  const energiaBobDos = (potBobinaDos * countDos)
+  const bateryLifeExtension = energiaBobDos + energiaBobUno
   return bateryLifeExtension
 }
 

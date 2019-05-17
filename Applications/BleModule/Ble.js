@@ -18,7 +18,7 @@ import { Icon } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import BleManager from 'react-native-ble-manager'
 
-import { sendDataToServer, removeItemValue, sendDataToServerTest } from './BleUtils'
+import { sendDataToServer, removeItemValue, removeItemValueUser, sendDataToServerTest } from './BleUtils'
 import * as actions from '../Stores/Actions/auth'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
@@ -92,6 +92,7 @@ class Ble extends Component {
         }
       })
       removeItemValue()
+      removeItemValueUser()
     }
 
     /* In case of not having the permission to access to location (in Android Devices) this will ask the user for permission
@@ -250,7 +251,9 @@ class Ble extends Component {
                           })
                         if (counterDataUser > 20) {
                           sendDataToServer(this.props.token, value)
+                          removeItemValueUser()
                           counterDataUser = 0
+
                         }
                         counterDataUser = counterDataUser + 1
                       })
@@ -272,6 +275,7 @@ class Ble extends Component {
                           })
                         if (counterData > 20) {
                           sendDataToServerTest(this.props.token, value)
+                          removeItemValue()
                           counterData = 0
                         }
                         counterData = counterData + 1
