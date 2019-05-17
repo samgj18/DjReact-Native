@@ -40,7 +40,6 @@ class Dashboard extends Component {
     let image = <Image
       style={{ width: 100, height: 100, borderRadius: 10 }}
       source={{ uri: 'https://pbs.twimg.com/media/DUupQHIU8AAJj24.jpg' }}
-
     />
 
     if (this.props.activity == 0) {
