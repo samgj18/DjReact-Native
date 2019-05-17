@@ -93,6 +93,8 @@ export const calculateLifeExpansionBatery = (voltages) => {
     const doubleVoltage = parseFloat(voltage)
     if (doubleVoltage >= 3.290) {
       bateryLifeExtensionCounter = bateryLifeExtensionCounter + 1
+    } else {
+      bateryLifeExtensionCounter = 0
     }
   })
   const bateryLifeExtension = 0.05 * bateryLifeExtensionCounter

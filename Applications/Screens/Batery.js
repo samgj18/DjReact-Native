@@ -75,6 +75,7 @@ class Batery extends Component {
         const response = await fetchDataFromServerBatery(this.props.token,
             `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
         const bateryLifeExtension = calculateLifeExpansionBatery(response)
+        console.log(bateryLifeExtension)
         this.setState({
             data: response,
             bateryExtension: bateryLifeExtension

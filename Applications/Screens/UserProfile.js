@@ -5,8 +5,6 @@ import { Text } from 'react-native-elements'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Icon } from 'react-native-elements'
 import ModalDropdown from 'react-native-modal-dropdown';
-import PreLoader from '../Components/PreLoader'
-import DashboardList from '../Components/DashboardList'
 import * as actions from '../Stores/Actions/auth'
 
 
@@ -14,10 +12,7 @@ import * as actions from '../Stores/Actions/auth'
 class UserProfile extends Component {
     constructor(props) {
         super(props)
-
-
         this.state = {
-            articles: '',
             firstName: '',
             lastName: '',
             username: '',
@@ -88,30 +83,6 @@ class UserProfile extends Component {
         }
     }
 
-    async componentDidUpdate(prevProps, prevState) {
-        if (this.state.user && this.counter == 0) {
-            try {
-                this.refs.toast.show('Cargando información de interes', DURATION.LENGTH_SHORT);
-                let config = {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                }
-                const URL = 'https://newsapi.org/v2/top-headlines?country=co&category=science&apiKey=0a4c95a16be648e8be07e265bbc31af2'
-                const response = await fetch(URL, config)
-                const responseJson = await response.json()
-                this.counter = this.counter + 1
-                this.setState({
-                    articles: responseJson.articles
-                })
-            } catch (error) {
-                console.log(error)
-            }
-
-        }
-    }
     gotoDashboard() {
         this.props.navigation.navigate('Landing');
     }
@@ -160,7 +131,7 @@ class UserProfile extends Component {
                             options={['Cerrar sesión']}
                             onSelect={this.dropdownOnSelect.bind(this)}
                         />
-                        <DashboardList style={{ paddingTop: 20 }} articles={this.state.articles} />
+
                     </View>
                     <Toast
                         ref="toast"

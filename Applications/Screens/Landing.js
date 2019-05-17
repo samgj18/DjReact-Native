@@ -35,7 +35,7 @@ export default class Landing extends Component {
                         delay={3000}
                         style={[styles.Title]}
                         onPress={this.gotoRegister.bind(this)}
-                    >¡Iniciemos!</Text>
+                    >¡Presiona para iniciar!</Text>
 
                 </View>
 
