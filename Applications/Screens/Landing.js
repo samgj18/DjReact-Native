@@ -8,11 +8,12 @@ import Sketch from '../Assets/Images/BackgroundIcon.png'
 
 export default class Landing extends Component {
 
-    gotoRegister = () => {
+    gotoLogin = () => {
         const navigateAction = NavigationActions.navigate({
             routeName: 'Login'
         })
         this.props.navigation.dispatch(navigateAction)
+
     }
     static navigationOptions = { header: null };
 
@@ -34,7 +35,7 @@ export default class Landing extends Component {
                         animation='pulse'
                         delay={3000}
                         style={[styles.Title]}
-                        onPress={this.gotoRegister.bind(this)}
+                        onPress={this.gotoLogin.bind(this)}
                     >¡Presiona para iniciar!</Text>
 
                 </View>

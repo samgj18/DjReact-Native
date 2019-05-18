@@ -66,7 +66,7 @@ export const fetchDataFromServer = async (token, url) => {
 export const calculateLifeExpansionBatery = (voltagesCoilOneFloat, voltagesCoilTwoFloat) => {
   let vAnterior = 0
   let deltaTiempo = 0.05
-  let caidaDiodo = 1.8
+  let caidaDiodo = 1800
   let inductanciaBobUno = 2.16743
   let inductanciaBobDos = 2.16808
   let potBobinaUno = 0
