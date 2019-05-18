@@ -22,6 +22,7 @@ class Historics extends Component {
             endTimePicked: '',
             initialDatePicked: '',
             endDatePicked: '',
+            completeDate: '',
             header: 'Selecciona la fecha inicial',
             voltageCoilOne: [],
             voltageCoilTwo: [],
@@ -103,6 +104,11 @@ class Historics extends Component {
                 console.log(this.state.endTimePicked)
                 this.hideTimePicker()
                 this.counter = 0
+                this.setState({
+                    completeDate: `${this.state.initialDatePicked},${this.state.initialTimePicked}-${this.state.endDatePicked},${this.state.endTimePicked}`
+                }, () => {
+                    console.log(this.state.completeDate)
+                })
             })
         }
     }
@@ -122,33 +128,37 @@ class Historics extends Component {
         })
     }
 
-    handleDataFetch = async (initialDatePicked, endDatePicked, initialTimePicked, endTimePicked) => {
-        const response = await fetchDataFromServer(this.props.token,
-            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked},${initialTimePicked}-${endDatePicked},${endTimePicked}`)
-        this.setState({
-            voltageCoilOne: response[0]
-        }, () => {
+    handleDataFetch = async (completeDate) => {
+        if (completeDate != '') {
+            const response = await fetchDataFromServer(this.props.token,
+                `http://72.14.177.247/voltages/current-user/?q=${completeDate}`)
             this.setState({
-                voltageCoilTwo: response[1]
+                voltageCoilOne: response[0]
             }, () => {
                 this.setState({
-                    activities: response[2]
+                    voltageCoilTwo: response[1]
                 }, () => {
-                    if (this.state.voltageCoilOne == [] || this.state.voltageCoilTwo == []) {
-                        this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
-                    } else {
-                        this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
-                    }
+                    this.setState({
+                        activities: response[2]
+                    }, () => {
+                        if (this.state.voltageCoilOne == [] || this.state.voltageCoilTwo == []) {
+                            this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
+                        } else {
+                            this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
+                        }
+                    })
                 })
             })
-        })
+        } else {
+            this.refs.toast.show('Seleccione una fecha', DURATION.LENGTH_SHORT)
+        }
     }
 
 
 
 
     render() {
-        const { initialDatePicked, endDatePicked, voltageCoilOne, voltageCoilTwo, activities, initialTimePicked, endTimePicked } = this.state
+        const { voltageCoilOne, voltageCoilTwo, activities, completeDate } = this.state
         if (this.props.loading) {
             return (
                 <PreLoader />
@@ -289,7 +299,7 @@ class Historics extends Component {
                             name='send'
                             type='font-awesome'
                             color='#1C1612'
-                            onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked, initialTimePicked, endTimePicked)} />
+                            onPress={() => this.handleDataFetch(completeDate)} />
                     </View>
 
                     <DateTimePicker

@@ -40,6 +40,7 @@ export const sendDataToServerTest = async (token, data) => {
 
 
 export const fetchDataFromServer = async (token, url) => {
+  console.log(url)
   try {
     let config = {
       method: 'GET',
@@ -51,6 +52,7 @@ export const fetchDataFromServer = async (token, url) => {
     const URL = url
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
+    console.log(serverResponse)
     const data = serverResponse.map(row => ({
       voltageCoilOne: row.voltage_coil_1,
       voltageCoilTwo: row.voltage_coil_2,
