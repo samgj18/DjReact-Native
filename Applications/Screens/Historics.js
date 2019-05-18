@@ -17,6 +17,9 @@ class Historics extends Component {
 
         this.state = {
             isDateTimePickerVisible: false,
+            isTimePickerVisible: false,
+            initialTimePicked: '',
+            endTimePicked: '',
             initialDatePicked: '',
             endDatePicked: '',
             header: 'Selecciona la fecha inicial',
@@ -30,8 +33,16 @@ class Historics extends Component {
         this.setState({ isDateTimePickerVisible: true });
     };
 
+    showTimePicker = () => {
+        this.setState({ isTimePickerVisible: true });
+    };
+
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
+    };
+
+    hideTimePicker = () => {
+        this.setState({ isTimePickerVisible: false });
     };
 
     handleDateRange = (date) => {
@@ -48,10 +59,10 @@ class Historics extends Component {
         } else {
             this.setState({
                 endDatePicked: date,
-                header: '¡Realiza la consulta con el botón de abajo!'
+                header: '¡Selecciona la hora con el botón de al lado!'
             }, () => {
                 console.log(this.state.endDatePicked)
-                this.hideDateTimePicker()
+                console.log(this.counter)
                 this.counter = 0
             })
         }
@@ -72,9 +83,48 @@ class Historics extends Component {
         })
     }
 
-    handleDataFetch = async (initialDatePicked, endDatePicked) => {
+
+    handleTimeRange = (time) => {
+        if (this.counter === 0) {
+            this.setState({
+                initialTimePicked: time,
+                header: 'Selecciona la hora final'
+            }, () => {
+                console.log(this.state.initialTimePicked)
+                this.counter = this.counter + 1
+                this.showTimePicker()
+                this.refs.toast.show('Selecciona hora final', DURATION.LENGTH_SHORT)
+            })
+        } else {
+            this.setState({
+                endTimePicked: time,
+                header: '¡Realiza la consulta con el botón de abajo!'
+            }, () => {
+                console.log(this.state.endTimePicked)
+                this.hideTimePicker()
+                this.counter = 0
+            })
+        }
+    }
+
+    handleTimePicked = (datetime) => {
+        let curr_hour = datetime.getHours();
+        let curr_min = datetime.getMinutes();
+        let curr_sec = datetime.getSeconds();
+        let mydatestr = curr_hour + ',' +
+            curr_min + ',' +
+            curr_sec
+        this.setState({
+            header: 'Seleccione la hora inicial'
+        }, () => {
+            this.hideTimePicker()
+            this.handleTimeRange(mydatestr)
+        })
+    }
+
+    handleDataFetch = async (initialDatePicked, endDatePicked, initialTimePicked, endTimePicked) => {
         const response = await fetchDataFromServer(this.props.token,
-            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
+            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked},${initialTimePicked}-${endDatePicked},${endTimePicked}`)
         this.setState({
             voltageCoilOne: response[0]
         }, () => {
@@ -98,7 +148,7 @@ class Historics extends Component {
 
 
     render() {
-        const { initialDatePicked, endDatePicked, voltageCoilOne, voltageCoilTwo, activities } = this.state
+        const { initialDatePicked, endDatePicked, voltageCoilOne, voltageCoilTwo, activities, initialTimePicked, endTimePicked } = this.state
         if (this.props.loading) {
             return (
                 <PreLoader />
@@ -109,13 +159,22 @@ class Historics extends Component {
                     <View style={styles.Historics}>
                         <Text h4>Consulta de Históricos</Text>
                         <Text> {this.state.header} </Text>
-                        <Icon
-                            reverse
-                            name='calendar'
-                            type='font-awesome'
-                            color='#1C1612'
-                            onPress={this.showDateTimePicker}
-                        />
+                        <View style={{ flexDirection: 'row' }}>
+                            <Icon
+                                reverse
+                                name='calendar'
+                                type='font-awesome'
+                                color='#1C1612'
+                                onPress={this.showDateTimePicker}
+                            />
+                            <Icon
+                                reverse
+                                name='clock-o'
+                                type='font-awesome'
+                                color='#1C1612'
+                                onPress={this.showTimePicker}
+                            />
+                        </View>
                     </View>
                     <ScrollView style={{ flex: 2 }}>
                         <View style={styles.Charts}>
@@ -230,13 +289,19 @@ class Historics extends Component {
                             name='send'
                             type='font-awesome'
                             color='#1C1612'
-                            onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
+                            onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked, initialTimePicked, endTimePicked)} />
                     </View>
 
                     <DateTimePicker
                         isVisible={this.state.isDateTimePickerVisible}
                         onConfirm={this.handleDatePicked}
                         onCancel={this.hideDateTimePicker}
+                    />
+                    <DateTimePicker
+                        mode='time'
+                        isVisible={this.state.isTimePickerVisible}
+                        onConfirm={this.handleTimePicked}
+                        onCancel={this.hideTimePicker}
                     />
 
 
