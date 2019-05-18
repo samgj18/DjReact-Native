@@ -16,8 +16,12 @@ class Batery extends Component {
         super(props)
         this.state = {
             isDateTimePickerVisible: false,
+            isTimePickerVisible: false,
+            initialTimePicked: '',
+            endTimePicked: '',
             initialDatePicked: '',
             endDatePicked: '',
+            completeDate: '',
             header: 'Selecciona la fecha inicial',
             bateryExtension: null,
             bateryEnergy: null
@@ -28,8 +32,16 @@ class Batery extends Component {
         this.setState({ isDateTimePickerVisible: true });
     };
 
+    showTimePicker = () => {
+        this.setState({ isTimePickerVisible: true });
+    };
+
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
+    };
+
+    hideTimePicker = () => {
+        this.setState({ isTimePickerVisible: false });
     };
 
     handleDateRange = (date) => {
@@ -38,6 +50,7 @@ class Batery extends Component {
                 initialDatePicked: date,
                 header: 'Selecciona la fecha final'
             }, () => {
+                console.log(this.state.initialDatePicked)
                 this.counter = this.counter + 1
                 this.showDateTimePicker()
                 this.refs.toast.show('Selecciona fecha final', DURATION.LENGTH_SHORT)
@@ -45,14 +58,14 @@ class Batery extends Component {
         } else {
             this.setState({
                 endDatePicked: date,
-                header: '¡Realiza la consulta con el botón de abajo!'
+                header: '¡Selecciona la hora con el botón de al lado!'
             }, () => {
-                this.hideDateTimePicker()
+                console.log(this.state.endDatePicked)
+                console.log(this.counter)
                 this.counter = 0
             })
         }
     }
-
 
     handleDatePicked = (datetime) => {
         let curr_date = datetime.getDate();
@@ -69,21 +82,68 @@ class Batery extends Component {
         })
     }
 
-    handleDataFetch = async (initialDatePicked, endDatePicked) => {
-        const response = await fetchDataFromServer(this.props.token,
-            `http://72.14.177.247/voltages/current-user/?q=${initialDatePicked}-${endDatePicked}`)
-        const bateryLifeExtension = calculateLifeExpansionBatery(response[0], response[1])
-        console.log(bateryLifeExtension)
+
+    handleTimeRange = (time) => {
+        if (this.counter === 0) {
+            this.setState({
+                initialTimePicked: time,
+                header: 'Selecciona la hora final'
+            }, () => {
+                console.log(this.state.initialTimePicked)
+                this.counter = this.counter + 1
+                this.showTimePicker()
+                this.refs.toast.show('Selecciona hora final', DURATION.LENGTH_SHORT)
+            })
+        } else {
+            this.setState({
+                endTimePicked: time,
+                header: '¡Realiza la consulta con el botón de abajo!'
+            }, () => {
+                console.log(this.state.endTimePicked)
+                this.hideTimePicker()
+                this.counter = 0
+                this.setState({
+                    completeDate: `${this.state.initialDatePicked},${this.state.initialTimePicked}-${this.state.endDatePicked},${this.state.endTimePicked}`
+                }, () => {
+                    console.log(this.state.completeDate)
+                })
+            })
+        }
+    }
+
+    handleTimePicked = (datetime) => {
+        let curr_hour = datetime.getHours();
+        let curr_min = datetime.getMinutes();
+        let curr_sec = datetime.getSeconds();
+        let mydatestr = curr_hour + ',' +
+            curr_min + ',' +
+            curr_sec
         this.setState({
-            bateryExtension: bateryLifeExtension[0],
-            bateryEnergy: bateryLifeExtension[1]
+            header: 'Seleccione la hora inicial'
         }, () => {
-            if (this.state.bateryExtension != null) {
-                this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
-            } else {
-                this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
-            }
+            this.hideTimePicker()
+            this.handleTimeRange(mydatestr)
         })
+    }
+
+    handleDataFetch = async (completeDate) => {
+        if (completeDate != '') {
+            const response = await fetchDataFromServer(this.props.token,
+                `http://72.14.177.247/voltages/current-user/?q=${completeDate}`)
+            const bateryLifeExtension = calculateLifeExpansionBatery(response[0], response[1])
+            console.log(bateryLifeExtension)
+            this.setState({
+                bateryExtension: bateryLifeExtension[0],
+                bateryEnergy: bateryLifeExtension[1]
+            }, () => {
+                if (this.state.bateryExtension != null) {
+                    this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
+                } else {
+                    this.refs.toast.show('No pudimos obtener los datos', DURATION.LENGTH_SHORT)
+                }
+            })
+        }
+        this.refs.toast.show('Seleccione un fecha válida', DURATION.LENGTH_SHORT)
     }
 
 
@@ -91,7 +151,7 @@ class Batery extends Component {
 
     render() {
 
-        const { initialDatePicked, endDatePicked } = this.state
+        const { completeDate } = this.state
         if (this.props.loading) {
             return (
                 <PreLoader />
@@ -104,23 +164,32 @@ class Batery extends Component {
                             style={{ textAlign: 'center' }}
                         >Extensión vida útil de la batería</Text>
                         <Text> {this.state.header} </Text>
-                        <Icon
-                            reverse
-                            name='calendar'
-                            type='font-awesome'
-                            color='#1C1612'
-                            onPress={this.showDateTimePicker}
-                        />
+                        <View style={{ flexDirection: 'row' }}>
+                            <Icon
+                                reverse
+                                name='calendar'
+                                type='font-awesome'
+                                color='#1C1612'
+                                onPress={this.showDateTimePicker}
+                            />
+                            <Icon
+                                reverse
+                                name='clock-o'
+                                type='font-awesome'
+                                color='#1C1612'
+                                onPress={this.showTimePicker}
+                            />
+                        </View>
                     </View>
                     <View style={styles.Consulta}>
-                        {this.state.bateryExtension ? (
+                        {this.state.bateryExtension != null ? (
                             <Text h4
                                 style={{ textAlign: 'center' }}>La extensión de la vida útil de
                             la batería fue de {this.state.bateryExtension} segundos.</Text>
                         ) : null}
-                        {this.state.bateryEnergy ? (
+                        {this.state.bateryEnergy != null ? (
                             <Text h4
-                                style={{ textAlign: 'center', paddingTop: 20 }}>La extensión de la vida útil de
+                                style={{ textAlign: 'center', paddingTop: 20 }}>La energía entregada
                             la batería fue de {this.state.bateryEnergy} Jules.</Text>
                         ) : null}
                         <Icon
@@ -128,7 +197,7 @@ class Batery extends Component {
                             name='send'
                             type='font-awesome'
                             color='#1C1612'
-                            onPress={() => this.handleDataFetch(initialDatePicked, endDatePicked)} />
+                            onPress={() => this.handleDataFetch(completeDate)} />
                     </View>
 
                     <DateTimePicker
@@ -136,7 +205,12 @@ class Batery extends Component {
                         onConfirm={this.handleDatePicked}
                         onCancel={this.hideDateTimePicker}
                     />
-
+                    <DateTimePicker
+                        mode='time'
+                        isVisible={this.state.isTimePickerVisible}
+                        onConfirm={this.handleTimePicked}
+                        onCancel={this.hideTimePicker}
+                    />
 
                     <Toast
                         ref="toast"
