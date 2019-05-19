@@ -62,6 +62,23 @@ class Dashboard extends Component {
       image
     }
 
+    /*     if (this.props.activity == 0) {
+          activity = 'Saltar'
+          image = image1
+        } else if (this.props.activity == 1) {
+          activity = 'Correr'
+          image = image2
+        } else if (this.props.activity == 2) {
+          activity = 'Estar quieto'
+          image = image3
+        } else if (this.props.activity == 3) {
+          activity = 'Escaleras'
+          image = image4
+        } else {
+          activity = 'Reconociendo actividad...'
+          image
+        } */
+
     if (this.props.loading) {
       return (
         <PreLoader />
