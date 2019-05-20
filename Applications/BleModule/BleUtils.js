@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage'
 
-export const sendDataToServer = async (token, data) => {
+export const sendDataToServer = async (data) => {
   try {
     let config = {
       method: 'POST',
       headers: {
-        'Authorization': 'Token' + ' ' + 'e7afb8fe0eae218e947de82b7a274c393ac0bf93',
+        'Authorization': 'Token e7afb8fe0eae218e947de82b7a274c393ac0bf93',
         'Content-Type': 'application/json',
       },
       body: data

@@ -217,7 +217,6 @@ class Ble extends Component {
                     userVoltageData = res[2]
 
                     let btInfo = {
-                      "user": `${this.props.id}`,
                       "voltage_coil_1": `${coilOneData}`,
                       "voltage_coil_2": `${coilTwoData}`,
                       "voltage_generated_by_user": `${userVoltageData}`,
@@ -238,7 +237,7 @@ class Ble extends Component {
                             console.log('There was an error saving the data')
                           })
                         if (counterData > 20) {
-                          sendDataToServer('', value)
+                          sendDataToServer(value)
                           removeItemValue()
                           counterData = 0
                         }
