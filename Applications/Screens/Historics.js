@@ -71,7 +71,7 @@ class Historics extends Component {
 
     handleDatePicked = (datetime) => {
         let curr_date = datetime.getDate();
-        let curr_month = datetime.getMonth();
+        let curr_month = datetime.getMonth() + 1;
         let curr_year = datetime.getFullYear();
         let mydatestr = curr_year + ',' +
             curr_month + ',' +

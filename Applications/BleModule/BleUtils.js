@@ -10,7 +10,7 @@ export const sendDataToServer = async (token, data) => {
       },
       body: data
     }
-    const URL = 'http://72.14.177.247/voltages/train-data/'
+    const URL = 'http://72.14.177.247/voltages/all-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
     console.log(serverResponse)

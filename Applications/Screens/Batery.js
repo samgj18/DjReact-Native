@@ -69,7 +69,7 @@ class Batery extends Component {
 
     handleDatePicked = (datetime) => {
         let curr_date = datetime.getDate();
-        let curr_month = datetime.getMonth();
+        let curr_month = datetime.getMonth() + 1;
         let curr_year = datetime.getFullYear();
         let mydatestr = curr_year + ',' +
             curr_month + ',' +
@@ -133,8 +133,8 @@ class Batery extends Component {
             const bateryLifeExtension = calculateLifeExpansionBatery(response[0], response[1])
             console.log(bateryLifeExtension)
             this.setState({
-                bateryExtension: bateryLifeExtension[0],
-                bateryEnergy: bateryLifeExtension[1]
+                bateryExtension: bateryLifeExtension[0] / 1000000,
+                bateryEnergy: bateryLifeExtension[1] / 1000000
             }, () => {
                 if (this.state.bateryExtension != null) {
                     this.refs.toast.show('Datos obtenidos exitosamente', DURATION.LENGTH_SHORT)
