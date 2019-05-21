@@ -421,13 +421,6 @@ class Ble extends Component {
             <Picker.Item label='Permancer quieto' value='3' />
             <Picker.Item label='Caminar' value='4' />
           </Picker>
-          <CheckBox
-            title='Habilitar | Deshabilitar modo de entrenamiento'
-            checkedIcon='dot-circle-o'
-            uncheckedIcon='circle-o'
-            checked={this.state.checked}
-            onPress={() => this.setState({ checked: !this.state.checked })}
-          />
         </View>
         <ListView
           enableEmptySections={true}
