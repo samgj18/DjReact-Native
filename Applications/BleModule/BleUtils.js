@@ -10,7 +10,7 @@ export const sendDataToServer = async (token, data) => {
       },
       body: data
     }
-    const URL = 'http://72.14.177.247/voltages/all-data/'
+    const URL = 'http://72.14.177.247/voltages/train-data/'
     const response = await fetch(URL, config)
     const serverResponse = await response.json()
     console.log(serverResponse)
@@ -144,7 +144,7 @@ rowConverterVoltageCoils = (data) => {
 
 export const removeItemValue = async () => {
   try {
-    await AsyncStorage.removeItem('databaseTest');
+    await AsyncStorage.removeItem('databaseTrain');
   }
   catch (exception) {
     console.log('Unable to erase data')
@@ -153,7 +153,7 @@ export const removeItemValue = async () => {
 
 export const removeItemValueUser = async () => {
   try {
-    await AsyncStorage.removeItem('databaseTrain');
+    await AsyncStorage.removeItem('databaseTest');
   }
   catch (exception) {
     console.log('Unable to erase data')

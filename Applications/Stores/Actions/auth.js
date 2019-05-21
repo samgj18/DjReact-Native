@@ -175,8 +175,6 @@ export const featuresList = (voltagesX, voltagesY) => {
 }
 
 export const activityClassifier = (coilOneData, coilTwoData) => {
-    console.log(coilOneData)
-    console.log(coilTwoData)
     return dispatch => {
         voltagesX.push(coilOneData)
         voltagesY.push(coilTwoData)
@@ -188,7 +186,9 @@ export const activityClassifier = (coilOneData, coilTwoData) => {
             auxCounter = 0
         }
         dispatch(activityMade(activity))
+        console.log(activity)
     }
+
 }
 
 const getIdAuth = async (username, password) => {
